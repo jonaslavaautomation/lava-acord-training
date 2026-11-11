@@ -176,6 +176,11 @@ export async function uploadMaterial(input: UploadMaterialInput): Promise<Traini
       // Custom (designer) fields only apply to the exact PDF they were drawn on, so they are not carried over.
     }
     await ensureDefaultMappings(material);
+    try {
+      await autoConfigureAnswerKey(material.id);
+    } catch (err) {
+      console.warn('Automatic answer key could not be built:', (err as Error).message);
+    }
   }
   return material;
 }
@@ -336,4 +341,26 @@ export async function getScenarioFacts(moduleId: AcordId): Promise<ScenarioFact[
   const { data, error } = await supabase.from('scenario_facts').select('*').eq('module_id', moduleId).order('sort_order');
   if (error) throw new Error(error.message);
   return (data ?? []) as ScenarioFact[];
+}
+
+export interface AutoAnswerKeyResult {
+  matched: number;
+  kept_manual: number;
+  total_rules: number;
+  not_found: string[];
+}
+
+/**
+ * Build the answer key automatically from the module's scenario: every scenario detail is matched to its ACORD
+ * field on this PDF (server-side rules in supabase/answer-keys). Answers a trainer typed by hand are kept.
+ */
+export async function autoConfigureAnswerKey(materialId: string, overwrite = false): Promise<AutoAnswerKeyResult> {
+  const { data, error } = await supabase.rpc('auto_configure_answer_key', { p_material_id: materialId, p_overwrite: overwrite });
+  if (error) {
+    if (/auto_configure_answer_key/.test(error.message) && /(not find|does not exist)/i.test(error.message)) {
+      throw new Error('Automatic answer keys are not installed yet. Run the migration 20261111120000_auto_answer_keys.sql in Supabase.');
+    }
+    throw new Error(error.message);
+  }
+  return data as AutoAnswerKeyResult;
 }

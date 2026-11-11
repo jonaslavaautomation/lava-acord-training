@@ -581,8 +581,8 @@ function PdfNoticeBanner({ notice, onClose, onDesign }: { notice: PdfNotice; onC
           {ok
             ? notice.carriedOver > 0
               ? `${notice.fileName} is now the current version. ${notice.carriedOver} answer-key mapping${notice.carriedOver > 1 ? 's were' : ' was'} carried over from the previous version (matching field names). Review the rest below.`
-              : `${notice.fileName} is now the current version. Configure the answer key below before students can start the assessment.`
-            : `${notice.fileName} was saved, but students cannot fill it in yet. Open the Field Designer to draw interactive fields on the pages, then configure the answer key — or upload the genuinely fillable version of the form.`}
+              : `${notice.fileName} is now the current version. The answer key was built automatically from the scenario — review it below if you like.`
+            : `${notice.fileName} was saved, but students cannot fill it in yet. Upload the genuinely fillable version of the form (recommended — its answer key is built automatically), or open the Field Designer to draw fields and configure the answer key by hand.`}
         </p>
         {a.warnings.filter((w) => !w.startsWith('No editable')).map((w) => <p key={w} className="text-xs text-amber-300 mt-1">⚠ {w}</p>)}
         {!ok && <button onClick={onDesign} className="btn-secondary text-xs mt-3"><MousePointerSquareDashed className="w-3.5 h-3.5" /> Open Field Designer</button>}

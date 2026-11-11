@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, Info, Loader2, LocateFixed, Save, Search, Settings2, Lock } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Info, Loader2, LocateFixed, Save, Search, Settings2, Lock, Sparkles } from 'lucide-react';
 import { Badge } from './ui';
-import { getFormFields, getMappings, getScenarioFacts, saveMappings } from '@/lib/materialsService';
+import { autoConfigureAnswerKey, getFormFields, getMappings, getScenarioFacts, saveMappings } from '@/lib/materialsService';
 import type { AcordId, MatchType, MissingRule, PdfFieldInfo, PdfFieldMapping, ScenarioFact, TrainingMaterial } from '@/types';
 
 interface Props {
@@ -59,7 +59,10 @@ export function FieldMappingEditor({ moduleId, material, formNumber, onLocateFie
   useEffect(() => { load(); }, [load]);
 
   const update = (name: string, patch: Partial<PdfFieldMapping>) => {
-    setRows((prev) => prev.map((r) => (r.pdf_field_name === name ? { ...r, ...patch } : r)));
+    // A hand edit turns an automatic answer into a manual one, so re-running auto-fill will not overwrite it.
+    setRows((prev) => prev.map((r) => (r.pdf_field_name === name
+      ? { ...r, ...(!('scenario_fact_key' in patch) && r.scenario_fact_key?.startsWith('auto:') ? { scenario_fact_key: null } : {}), ...patch }
+      : r)));
     setDirty((prev) => new Set(prev).add(name));
     setMessage(null);
   };
@@ -78,6 +81,25 @@ export function FieldMappingEditor({ moduleId, material, formNumber, onLocateFie
       missing_rule: 'penalize',
       is_scored: true,
     });
+  };
+
+  const [autoRunning, setAutoRunning] = useState(false);
+  const autoFill = async () => {
+    if (dirty.size > 0 && !window.confirm('You have unsaved changes. Auto-fill reloads the answer key and discards them. Continue?')) return;
+    setAutoRunning(true);
+    setMessage(null);
+    try {
+      const res = await autoConfigureAnswerKey(material.id);
+      await load();
+      const missing = res.not_found.length ? ` Not found on this PDF: ${res.not_found.join(', ')}.` : '';
+      const kept = res.kept_manual ? ` ${res.kept_manual} hand-configured field(s) kept.` : '';
+      setMessage({ kind: res.matched + res.kept_manual > 0 ? 'ok' : 'error', text: `Answer key built from the scenario: ${res.matched} of ${res.total_rules} details matched to PDF fields.${kept}${missing}` });
+      onSaved?.();
+    } catch (err) {
+      setMessage({ kind: 'error', text: (err as Error).message });
+    } finally {
+      setAutoRunning(false);
+    }
   };
 
   const save = async () => {
@@ -131,6 +153,10 @@ export function FieldMappingEditor({ moduleId, material, formNumber, onLocateFie
         <Badge variant="default"><Lock className="w-3 h-3" /> Trainer-only</Badge>
         <div className="ml-auto flex items-center gap-2">
           <Badge variant={stats.configured > 0 ? 'success' : 'warning'}>{stats.configured}/{rows.length} fields graded · {stats.points} pts</Badge>
+          <button onClick={autoFill} disabled={autoRunning || saving} className="btn-secondary py-1.5 text-xs" title="Match every detail in the scenario e-mail to its field on this PDF">
+            {autoRunning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            Auto-fill from scenario
+          </button>
           <button onClick={save} disabled={saving || dirty.size === 0} className="btn-primary py-1.5 text-xs">
             {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             Save{dirty.size > 0 ? ` (${dirty.size})` : ''}
@@ -139,7 +165,8 @@ export function FieldMappingEditor({ moduleId, material, formNumber, onLocateFie
       </div>
       <p className="text-xs text-muted-500 mb-3 leading-relaxed">
         Connect each PDF field (by its real AcroForm name) to the scenario information it should contain. Pick a scenario fact to
-        fill the expected answer automatically, or type it. Answers are stored server-side and are never sent to students;
+        fill the expected answer automatically, or type it. The answer key is built automatically when the PDF is uploaded; use
+        Auto-fill from scenario to rebuild it (answers you typed by hand are kept). Answers are stored server-side and are never sent to students;
         grading runs in the database when a student submits.
       </p>
 
@@ -189,6 +216,7 @@ export function FieldMappingEditor({ moduleId, material, formNumber, onLocateFie
               <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
                 <select value={m.scenario_fact_key ?? ''} onChange={(e) => applyFact(m, e.target.value)} className="input text-xs py-1.5 md:col-span-3 cursor-pointer" title="Scenario fact">
                   <option value="">Scenario fact…</option>
+                  {m.scenario_fact_key?.startsWith('auto:') && <option value={m.scenario_fact_key}>Auto — from scenario</option>}
                   {facts.map((x) => <option key={x.fact_key} value={x.fact_key}>{x.label} — {x.value}</option>)}
                 </select>
                 <input value={m.scenario_label} onChange={(e) => update(m.pdf_field_name, { scenario_label: e.target.value })} className="input text-xs py-1.5 md:col-span-2" placeholder="Label, e.g. Named Insured" title="Label shown in feedback" />
