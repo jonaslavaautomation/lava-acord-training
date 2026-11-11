@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-bg-base text-slate-200 font-sans;
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(225, 29, 72, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 100% 0%, rgba(6, 182, 212, 0.04) 0%, transparent 35%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    @apply bg-lava-600/30 text-white;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #252D40 transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply bg-line rounded-full;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    @apply bg-line-strong;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-bg-surface/80 backdrop-blur-xl border border-line-subtle;
+  }
+
+  .card {
+    @apply bg-bg-surface border border-line-subtle rounded-xl;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-line-strong hover:bg-bg-elevated hover:shadow-elevated;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-lava-600 text-white hover:bg-lava-500 active:bg-lava-700 shadow-glow;
+  }
+
+  .btn-secondary {
+    @apply btn bg-bg-elevated text-slate-200 border border-line hover:border-line-strong hover:bg-bg-hover;
+  }
+
+  .btn-ghost {
+    @apply btn text-muted-400 hover:text-white hover:bg-bg-hover;
+  }
+
+  .input {
+    @apply w-full bg-bg-base border border-line-subtle rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-muted-600 focus:outline-none focus:border-lava-600/60 focus:ring-1 focus:ring-lava-600/30 transition-colors;
+  }
+
+  .label {
+    @apply text-xs font-medium text-muted-400 uppercase tracking-wide;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium;
+  }
+
+  .progress-track {
+    @apply w-full h-1.5 bg-bg-base rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-500;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-400 transition-all duration-150 cursor-pointer;
+  }
+
+  .nav-item:hover {
+    @apply text-slate-200 bg-bg-hover;
+  }
+
+  .nav-item-active {
+    @apply text-white bg-bg-elevated;
+  }
+
+  .stat-value {
+    @apply text-2xl font-semibold text-white tracking-tight;
+  }
+}
