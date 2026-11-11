@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle2, Flame, Loader2, Lock, Mail, User } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, Lock, Mail, User } from 'lucide-react';
+import { BrandLockup } from '../components/BrandLockup';
 import { useAuth } from '../context/AuthContext';
 
 type Mode = 'signin' | 'signup' | 'reset';
@@ -42,14 +43,9 @@ export function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md animate-fade-in">
-        <div className="flex items-center gap-3 justify-center mb-8">
-          <div className="w-11 h-11 rounded-xl bg-lava-600 flex items-center justify-center shadow-glow">
-            <Flame className="w-6 h-6 text-white" strokeWidth={2.5} />
-          </div>
-          <div>
-            <div className="text-lg font-semibold text-white tracking-tight leading-tight">LAVA</div>
-            <div className="text-[11px] text-muted-500 uppercase tracking-wider leading-tight">ACORD Training Simulator</div>
-          </div>
+        <div className="flex flex-col items-center gap-3 mb-8">
+          <BrandLockup size="lg" />
+          <div className="text-[11px] text-muted-500 uppercase tracking-wider leading-tight">ACORD Training Simulator</div>
         </div>
 
         <form onSubmit={submit} className="card p-7 space-y-4">

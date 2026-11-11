@@ -5,7 +5,6 @@ import {
   TrendingUp,
   History,
   Settings,
-  Flame,
   ChevronRight,
   Users,
   FolderUp,
@@ -13,6 +12,7 @@ import {
   UserCog,
 } from 'lucide-react';
 import { useApp } from '../AppContext';
+import { BrandLockup } from './BrandLockup';
 import { useAuth } from '../context/AuthContext';
 import type { View } from '../types';
 
@@ -47,15 +47,8 @@ export function Sidebar() {
   return (
     <aside className="w-64 shrink-0 h-screen sticky top-0 border-r border-line-subtle bg-bg-surface/50 backdrop-blur-xl flex flex-col">
       <div className="px-5 py-5 border-b border-line-subtle">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-lava-600 flex items-center justify-center shadow-glow">
-            <Flame className="w-5 h-5 text-white" strokeWidth={2.5} />
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-white tracking-tight leading-tight">LAVA</div>
-            <div className="text-[10px] text-muted-500 uppercase tracking-wider leading-tight">ACORD Training</div>
-          </div>
-        </div>
+        <BrandLockup size="sm" />
+        <div className="text-[10px] text-muted-500 uppercase tracking-wider leading-tight mt-2.5">ACORD Training Simulator</div>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
