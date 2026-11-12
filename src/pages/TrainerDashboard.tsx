@@ -17,6 +17,7 @@ import { Badge, ProgressBar, ScoreRing, StatCard, SectionTitle } from '../compon
 import { useTrainerData } from '../lib/trainerData';
 import { useApp } from '../AppContext';
 import { ACORD_MODULES } from '../data/modules';
+import { KnowledgeCheckResults } from '../components/KnowledgeCheckResults';
 
 export function TrainerDashboard() {
   const [search, setSearch] = useState('');
@@ -205,6 +206,8 @@ export function TrainerDashboard() {
             </div>
           </div>
         </div>
+
+        <KnowledgeCheckResults />
       </div>
     </div>
   );

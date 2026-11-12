@@ -19,6 +19,7 @@ import {
   Paperclip,
   Download,
   FileCheck2,
+  ClipboardCheck,
 } from 'lucide-react';
 import { useApp } from '../AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -26,6 +27,7 @@ import { MODULE_MAP } from '../data/modules';
 import { Topbar } from '../components/Topbar';
 import { Badge, SectionTitle } from '../components/ui';
 import { TrainingVideoPlayer } from '../components/TrainingVideoPlayer';
+import { KnowledgeCheck, type KnowledgeCheckGate } from '../components/KnowledgeCheck';
 import { getSignedUrl } from '../lib/materialsService';
 import { formatFileSize } from '../lib/pdf';
 import { friendlyError, type VideoHeartbeatResult } from '../lib/assessmentService';
@@ -42,6 +44,7 @@ export function ModulePage() {
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
   const [hasInProgress, setHasInProgress] = useState(false);
+  const [kcGate, setKcGate] = useState<KnowledgeCheckGate>('loading');
 
   useEffect(() => {
     if (!activeModuleId) return;
@@ -71,7 +74,8 @@ export function ModulePage() {
   const hasVideo = videos.length > 0;
   const videoComplete = progress.videoCompleted;
   const pdfReady = Boolean(mats.pdf);
-  const canGenerate = hasVideo && videoComplete && pdfReady && (progress.attemptsRemaining > 0 || hasInProgress);
+  const kcPassed = kcGate === 'passed' || kcGate === 'unavailable';
+  const canGenerate = hasVideo && videoComplete && (kcPassed || hasInProgress) && pdfReady && (progress.attemptsRemaining > 0 || hasInProgress);
   const materialsLoading = !materialsLoaded;
 
   const handleStart = async () => {
@@ -90,7 +94,9 @@ export function ModulePage() {
     ? 'No training video has been uploaded for this module yet.'
     : !videoComplete
       ? 'Complete the required training video(s) first to unlock the assessment.'
-      : !pdfReady
+      : !kcPassed
+        ? kcGate === 'loading' ? 'Checking your Knowledge Check status…' : 'Pass the Knowledge Check above (80% or higher) to unlock the assessment.'
+        : !pdfReady
         ? 'The fillable ACORD PDF for this module has not been uploaded yet.'
         : 'No attempts remaining. Contact your trainer to reset.';
 
@@ -111,6 +117,10 @@ export function ModulePage() {
             <div className="flex items-center gap-2">
               {videoComplete ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <PlayCircle className="w-4 h-4 text-muted-500" />}
               <span className="text-sm text-muted-400">Video: <span className={videoComplete ? 'text-emerald-400' : 'text-slate-200'}>{videoComplete ? 'Complete' : 'Pending'}</span></span>
+            </div>
+            <div className="flex items-center gap-2">
+              {kcGate === 'passed' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <ClipboardCheck className="w-4 h-4 text-muted-500" />}
+              <span className="text-sm text-muted-400">Knowledge Check: <span className={kcGate === 'passed' ? 'text-emerald-400' : 'text-slate-200'}>{kcGate === 'passed' ? 'Passed' : kcGate === 'unavailable' ? '—' : 'Pending'}</span></span>
             </div>
             <div className="flex items-center gap-2">
               <Target className="w-4 h-4 text-muted-500" />
@@ -288,12 +298,24 @@ export function ModulePage() {
           </div>
         </section>
 
-        {/* Section C: Start Assessment */}
+        {/* Section C: Knowledge Check */}
+        {kcGate !== 'unavailable' && (
+          <section id="knowledge-check" className="animate-fade-in">
+            <SectionTitle
+              title="Knowledge Check"
+              subtitle="Answer questions about the training video before the hands-on assessment"
+              action={<Badge variant="info"><ClipboardCheck className="w-3 h-3" /> Section C</Badge>}
+            />
+            <KnowledgeCheck moduleId={mod.id} formNumber={mod.formNumber} videoComplete={videoComplete} onGateChange={setKcGate} />
+          </section>
+        )}
+
+        {/* Section D: Start Assessment */}
         <section className="animate-fade-in">
           <SectionTitle
             title="Assessment"
             subtitle="Generate a realistic scenario and complete the actual fillable ACORD PDF"
-            action={<Badge variant="lava"><Sparkles className="w-3 h-3" /> Section C</Badge>}
+            action={<Badge variant="lava"><Sparkles className="w-3 h-3" /> Section D</Badge>}
           />
           <div className={`card p-6 relative overflow-hidden ${canGenerate ? 'border-lava-600/30' : ''}`}>
             {canGenerate && <div className="absolute top-0 right-0 w-48 h-48 bg-lava-600/8 rounded-full blur-3xl" />}

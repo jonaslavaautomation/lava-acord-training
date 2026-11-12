@@ -152,7 +152,7 @@ export const MODULE_127: AcordModule = {
       'Schedule vehicles with complete VIN, cost new, and garaging information.',
       'List all licensed drivers with accurate license state and DOB.',
       'Set appropriate liability limits and deductibles.',
-      'Identify when to use symbol 1 (any auto) vs symbol 2 (scheduled autos).',
+      'Identify when to use symbol 1 (any auto) vs symbol 2 (owned autos only) vs symbol 7 (specifically described autos).',
     ],
   },
   scenario: {
@@ -191,7 +191,7 @@ COVERAGE REQUESTED
 - Liability: $1,000,000 CSL
 - Symbol 1 (any auto) for liability
 - Physical damage: comprehensive and collision, $1,000 deductible
-- Symbol 2 (scheduled autos) for physical damage
+- Symbol 2 (owned autos only) for physical damage
 - Uninsured/Underinsured Motorist: $1,000,000
 - Medical payments: $10,000
 - Hired & Non-owned auto liability

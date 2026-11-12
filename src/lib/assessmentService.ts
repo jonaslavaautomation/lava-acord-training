@@ -29,6 +29,9 @@ const ERROR_MESSAGES: Record<string, string> = {
   INVALID_VALUES: 'The form data could not be read. Please try again.',
   VIDEO_DURATION_UNKNOWN: 'The video length is unknown, so progress could not be recorded.',
   VIDEO_NOT_FOUND: 'This video is no longer available.',
+  KNOWLEDGE_CHECK_NOT_PASSED: 'Pass the Knowledge Check for this module first (80% or higher) to unlock the assessment.',
+  KNOWLEDGE_CHECK_ALREADY_PASSED: 'You already passed this Knowledge Check.',
+  KNOWLEDGE_CHECK_NOT_FOUND: 'This module has no Knowledge Check questions yet.',
   FORBIDDEN: 'You do not have permission to do that.',
   LAST_ADMIN: 'At least one administrator is required.',
 };
@@ -59,6 +62,67 @@ export async function reportVideoProgress(materialId: string, from: number, to: 
   });
   rpcError(error);
   return data as VideoHeartbeatResult;
+}
+
+// ---------------------------------------------------------------- knowledge check (video -> quiz -> assessment)
+
+export interface KnowledgeCheckQuestion {
+  id: string;
+  prompt: string;
+  options: string[];
+}
+
+export interface KnowledgeCheckResultItem {
+  id: string;
+  prompt: string;
+  given: number | null;
+  correct: boolean;
+  /** Only present once the student has passed. */
+  options?: string[];
+  correct_index?: number;
+  explanation?: string;
+}
+
+export interface KnowledgeCheckSubmission {
+  score: number;
+  correct: number;
+  total: number;
+  passed: boolean;
+  pass_score: number;
+  results: KnowledgeCheckResultItem[];
+}
+
+export interface KnowledgeCheckStatus {
+  question_count: number;
+  pass_score: number;
+  video_complete: boolean;
+  passed: boolean;
+  best_score: number | null;
+  attempts: number;
+  last_attempt: (Omit<KnowledgeCheckSubmission, 'pass_score'> & { created_at: string }) | null;
+  questions: KnowledgeCheckQuestion[];
+}
+
+/** Returns null when the Knowledge Check feature is not installed in the database yet. */
+export async function getKnowledgeCheck(moduleId: AcordId): Promise<KnowledgeCheckStatus | null> {
+  const { data, error } = await supabase.rpc('get_knowledge_check', { p_module_id: moduleId });
+  if (error) {
+    if (/get_knowledge_check/.test(error.message) && /(not find|does not exist)/i.test(error.message)) return null;
+    throw new Error(friendlyError(error));
+  }
+  return data as KnowledgeCheckStatus;
+}
+
+/** answers: question id -> chosen option index (index into the question's original options array). */
+export async function submitKnowledgeCheck(moduleId: AcordId, answers: Record<string, number>): Promise<KnowledgeCheckSubmission> {
+  const { data, error } = await supabase.rpc('submit_knowledge_check', { p_module_id: moduleId, p_answers: answers });
+  rpcError(error);
+  return data as KnowledgeCheckSubmission;
+}
+
+export async function resetKnowledgeCheck(userId: string, moduleId: AcordId): Promise<void> {
+  const { error } = await supabase.rpc('staff_reset_knowledge_check', { p_user_id: userId, p_module_id: moduleId });
+  rpcError(error);
 }
 
 // ---------------------------------------------------------------- assessments
