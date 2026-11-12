@@ -60,10 +60,10 @@ export const RULES = {
     { key: 'each_occ', label: 'Each occurrence limit', tip: 'liability, each occurrence limit amount', v: money(1000000), match: 'any-of', pts: 5, req: true },
     { key: 'deductible', label: 'Deductible amount ($5,000)', tip: 'deductible applicable to the Property Damage', v: money(5000), match: 'any-of', pts: 3, hint: 'The requested $5,000 deductible.' },
     { key: 'haz1_class', label: 'Hazard 1 — classification', tip: 'classification the applicant', nth: 1, v: 'restaurant', match: 'contains', pts: 4 },
-    { key: 'haz1_code', label: 'Hazard 1 — class code', tip: 'class code that corresponds', nth: 1, v: '', match: 'present', pts: 3, hint: 'Look up the restaurant class code.' },
+    { key: 'haz1_code', label: 'Hazard 1 — class code (optional)', tip: 'class code that corresponds', nth: 1, v: '', match: 'present', pts: 1, miss: 'optional', hint: 'The class code is optional (per the training video).' },
     { key: 'haz1_basis', label: 'Hazard 1 — premium basis', tip: 'rating basis of the exposure', nth: 1, v: 'S|Sales|Gross Sales', match: 'any-of', pts: 3, hint: 'Restaurants are rated on gross sales (S).' },
     { key: 'haz2_class', label: 'Hazard 2 — classification', tip: 'classification the applicant', nth: 2, v: 'catering', match: 'contains', pts: 4 },
-    { key: 'haz2_code', label: 'Hazard 2 — class code', tip: 'class code that corresponds', nth: 2, v: '', match: 'present', pts: 2 },
+    { key: 'haz2_code', label: 'Hazard 2 — class code (optional)', tip: 'class code that corresponds', nth: 2, v: '', match: 'present', pts: 1, miss: 'optional' },
     { key: 'haz2_basis', label: 'Hazard 2 — premium basis', tip: 'rating basis of the exposure', nth: 2, v: 'S|Sales|Gross Sales', match: 'any-of', pts: 2 },
     { key: 'haz2_exposure', label: 'Hazard 2 — catering exposure', tip: 'amount of the exposure used for this class code', nth: 2, v: money(45000), match: 'any-of', pts: 4, hint: 'Catering revenue was ~$45K.' },
   ],
@@ -147,24 +147,21 @@ export const RULES = {
     ...[
       ['Building', 'Building|Bldg|B', 2850000],
       ['Business Personal Property', 'BPP|Business Personal Property|Contents|Personal Property', 1650000],
-      ['Business Income', 'BI|Business Income|BI/EE|BIEE|Business Income & Extra Expense|Business Income/Extra Expense|Business Income and Extra Expense', 3200000],
     ].flatMap(([name, subject, limit], i) => {
-      const L = 'ABC'[i];
+      // As taught in the ACORD 140 video: subject of insurance is Building and/or BPP;
+      // Business Income is a checkbox in the additional-information box (not a third row).
+      const L = 'AB'[i];
       const row = `Row ${L} (${name})`;
-      const rules = [
-        { key: `sub${i + 1}_subject`, label: `${row} — subject of insurance`, n: `CommercialProperty_Premises_SubjectOfInsuranceCode_${L}`, v: subject, match: 'any-of', pts: 3, hint: 'List Building first, then Business Personal Property, then Business Income.' },
-        { key: `sub${i + 1}_limit`, label: `${row} — amount`, n: `CommercialProperty_Premises_LimitAmount_${L}`, v: money(limit), match: 'any-of', pts: 5, req: i < 2 },
+      return [
+        { key: `sub${i + 1}_subject`, label: `${row} — subject of insurance`, n: `CommercialProperty_Premises_SubjectOfInsuranceCode_${L}`, v: subject, match: 'any-of', pts: 3, hint: 'List Building first, then Business Personal Property (BPP).' },
+        { key: `sub${i + 1}_limit`, label: `${row} — amount`, n: `CommercialProperty_Premises_LimitAmount_${L}`, v: money(limit), match: 'any-of', pts: 5, req: true },
         { key: `sub${i + 1}_col`, label: `${row} — cause of loss`, n: `CommercialProperty_Premises_CauseOfLossCode_${L}`, v: 'special', match: 'contains', pts: 3 },
+        { key: `sub${i + 1}_coins`, label: `${row} — coinsurance %`, n: `CommercialProperty_Premises_CoinsurancePercent_${L}`, v: '80|80%', match: 'any-of', pts: 2 },
+        { key: `sub${i + 1}_val`, label: `${row} — valuation`, n: `CommercialProperty_Premises_ValuationCode_${L}`, v: 'RC|RCV|Replacement Cost|Replacement Cost Value|Replacement', match: 'any-of', pts: 3 },
+        { key: `sub${i + 1}_ded`, label: `${row} — deductible`, n: `CommercialProperty_Premises_DeductibleAmount_${L}`, v: money(2500), match: 'any-of', pts: 2 },
       ];
-      if (i < 2) {
-        rules.push(
-          { key: `sub${i + 1}_coins`, label: `${row} — coinsurance %`, n: `CommercialProperty_Premises_CoinsurancePercent_${L}`, v: '80|80%', match: 'any-of', pts: 2 },
-          { key: `sub${i + 1}_val`, label: `${row} — valuation`, n: `CommercialProperty_Premises_ValuationCode_${L}`, v: 'RC|Replacement Cost|Replacement|RCV', match: 'any-of', pts: 3 },
-          { key: `sub${i + 1}_ded`, label: `${row} — deductible`, n: `CommercialProperty_Premises_DeductibleAmount_${L}`, v: money(2500), match: 'any-of', pts: 2 },
-        );
-      }
-      return rules;
     }),
+    { key: 'bi_box', label: 'Business Income box checked', n: 'CommercialProperty_Attachment_BusinessIncomeExtraExpenseIndicator_A', ...yes, pts: 4, hint: 'The scenario requests business income — always check the Business Income box.' },
     { key: 'construction', label: 'Construction type', n: 'Construction_ConstructionCode_A', v: 'Joisted Masonry|JM|2|Class 2', match: 'any-of', pts: 5, req: true },
     { key: 'year_built', label: 'Year built', n: 'CommercialStructure_BuiltYear_A', v: '1998', match: 'exact', pts: 3 },
     { key: 'sqft', label: 'Total area (sq ft)', n: 'Construction_BuildingArea_A', v: '28000', match: 'contains', pts: 3 },

@@ -1,0 +1,100 @@
+# ACORD 125 training video — automatic transcript (Whisper small.en). Expect minor speech-recognition errors (e.g. "Accord"/"a court" = ACORD).
+[00:00] All right guys today we'll be going over the commercial insurance application also known as
+[00:05] the Accord 125. This is the application that you fill out whenever you're looking to get your
+[00:11] business quoted for insurance. It's used for various types of commercial insurance whether
+[00:16] it's for business auto, business owners, commercial liability, commercial property or anything of
+[00:21] that nature. As you can see all of the coverages are listed here under lines of business. You'll
+[00:27] use this form every time you request a quote. Now let's go ahead and dive in into how you fill it
+[00:34] out. To start the date is in the top right corner. This is the date when you're filling out the form
+[00:41] application itself. It's very important not to miss this step. So today is the 13th January 2025.
+[00:50] Next you'll fill out your agency information. Now remember that we're only going to fill out the
+[00:55] fields that are necessary to get a quote from the insurance carrier. You don't need to fill out
+[01:00] every single box. Just the essential information in order to get a quote. Right below that you will put
+[01:10] the address and see and stay where your insurance office is located. All right under that will be
+[01:19] the contact name. This is your contact so you'll put your name here phone number and your email
+[01:27] address. This is the information that the carriers will use if they need additional information about
+[01:35] the quote and also where they will send the quote details. So you want to make sure this is
+[01:40] accurate so you don't miss any communications from the insurance carriers. Now we'll select
+[01:45] the status of transaction which in this case will be quote and for this example we're going to
+[01:52] call a business owners policy. Now next will be the proposed effective date. I recommend setting
+[01:59] it at least one week in advance. Some insurance carriers can get back to you within a day
+[02:04] some within a few days so giving yourself a little extra time is helpful. For this example
+[02:12] we'll set it for the 20th. The proposed expiration date will always be one calendar year
+[02:22] from the proposed effective date. Next we'll move on to the billing plan and we will select direct.
+[02:31] This just means that the carrier will bill the applicant directly or the insured directly and not
+[02:38] the agency. For payment plan we will put a M here so the K monthly. We always want to see if that
+[02:46] option is available and for audits we will put a or an annual audit which usually comes
+[02:54] when the policy is up for renewal. Moving on to the applicant information with the applicant
+[03:01] as an entity such as an LLC and this is where you will put the name of their business.
+[03:10] So for this example we'll put so-so plumbing LLC if the applicant does not have an entity
+[03:17] meaning it is a sole proprietor or individually owned then you will put their first name
+[03:24] doing business as so-so plumbing but for this example we'll assume that he has an LLC.
+[03:33] Directly under that you will put the mailing address.
+[03:38] All right next we will put the EIN number. It's crucial that you fill out this box because
+[03:45] if you do not have this box fill the carriers will not be able to generate a quote. So this
+[03:50] is where you put the EIN number the client has on. If they do not then this is where you will
+[03:57] put their social security number. Business phone number goes here and if the client has
+[04:04] a website address it's not necessary but it does help you will put that URL here.
+[04:09] All right now let's move on to the contact type. We'll assume that the contact for this
+[04:14] quote is the business owner so here we'll put owner name let's say it's name is Joe Smith
+[04:22] and it's business phone number so here email address next we will move on to where the
+[04:30] business is located this will be the address of the business itself so it's relocation number one
+[04:36] building number one and we'll put the business address here. Now if they have multiple buildings
+[04:43] at the same location the next address you will pay here for the next location number
+[04:48] will still be location number one and it will be building number two this could be a storage
+[04:54] shed or any other building that's not the main building itself but still at the same location
+[05:00] if they have multiple locations then you would change location number one to location number two
+[05:06] and at the second location you will be putting the first building at that location. All right
+[05:13] we'll assume that the building is inside city limits and that it owns the building. Now this
+[05:20] is where you put the employee count and this is only in reference to this location so let's say
+[05:26] it has two employees full-time and two part-time indicating that there are two full-time and two
+[05:33] part-time employees operating at 321 Main Street. All right next we need the estimated annual revenue
+[05:42] this is the gross revenue of the business at this location so let's assume
+[05:47] JJ's plumbing brings in $150,000 annually now let's fill out the building information
+[05:56] so we'll assume that this is a standalone building for this example and we'll say the building is
+[06:02] 1200 square feet they may have a front office or something like that that is open to the public
+[06:08] so we'll put 500 square feet open to the public and since it is a standalone building the total
+[06:16] building area will be 1200 square feet indicating that this is the only business operating in that
+[06:22] building of course none of that will be leased to others now if they were a part of a larger
+[06:30] commercial building say a strip mall or something like that and this total building area would be
+[06:37] the square footage of the entire building itself including all spaces leased out by other companies
+[06:44] description of operations this is just a description of services of operations that apply to this
+[06:53] location so for this example we will say spherical work and equipment storage all right moving on to
+[07:01] the nature of business for this example it'll be a service-based business and here the description
+[07:10] of primary operations it's just where you want to give any information that the customer has
+[07:16] given you about the operations of the services that the business provides so we'll say
+[07:24] plumbing services um here you can indicate whether it's majority or a substantial commercial
+[07:32] we'll say this one is majority commercial and you can also add any information that may be helpful
+[07:38] for the owner writer and gauging what kind of business they are so let's say small town business
+[07:47] operating for 10 plus years rated five stars on google right here you will click the date
+[07:56] that the business started let's say started January 1st of 2002 all right installation
+[08:05] service or repair work this is a plumbing company so installation service and repair all applies to them
+[08:12] and it would be 100 off premises assuming they travel to take care of their clients
+[08:20] all right moving on we'll fill out all the general information questions be sure to fill
+[08:25] out these questions if the answer is yes to any of the questions and you have to provide a brief
+[08:32] explanation so we'll start top here with number one and for example let's say they do have a
+[08:40] formal safety programming operation we'll answer yesterday's question and let's assume that it's a
+[08:45] safety manual in the exposure to flammables explosives or chemicals we'll say yes here
+[08:52] let's say chemicals used in operations for cleaning something very simple very straightforward
+[09:02] and then what you want to do is go through and x the insured every single question word for word
+[09:09] and put the answer that they give you all right next we will fill out the prior carrier
+[09:16] information they do not have a prior carrier then of course we'll leave this blank and if they do
+[09:23] want to make sure we put at least the year the type of cover this they had and with which
+[09:30] carrier so this isn't a cutting pad jojo's plumbing had general liability with all states
+[09:36] i will say have property covers with all state also now the premium is not absolutely necessary
+[09:43] to get a quote neither is the effective or expiration date but it does help leave out
+[09:49] carriers that may not be competitive in what jojo's plumbing is looking for
+[09:55] so we'll say he was paying 500 for his normal liability and about 1200 for his property
+[10:03] all right and then we'll say that his current policy was effective from January 30th of last year
+[10:13] to January 30th of this year all right next we'll address the loss history if the applicant hasn't
+[10:21] had any losses in the past three to five years then you will simply check this box in the
+[10:26] cutting that they do not have any losses if they do have losses get that information from the
+[10:32] insured or the applicant make sure you put the date of occurrence what type of insurance they
+[10:37] had here and then briefly describe the type of claim how much was paid out and whether the
+[10:45] claim is still open or if it's closed you'll put no all right right here is where you would put
+[10:52] your signature as the producer and your name and then directly under that you will put the
+[10:58] applicant's signature i'll usually send an e-sign document to have them sign in data here
+[11:05] the applicant does not have to sign and date the insurance application in order to generate a quote
+[11:11] but before binding that signature will be required and also the effective date and expiration date
+[11:18] will have to be updated to the date of binding and that is how you fill out the accord form
+[11:25] watch when you file for the commercial insurance application

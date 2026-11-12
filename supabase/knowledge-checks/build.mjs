@@ -16,6 +16,7 @@ for (const [mod, qs] of Object.entries(QUESTIONS)) {
     if (keys.has(q.key)) throw new Error(`Duplicate key ${mod}/${q.key}`);
     keys.add(q.key);
     if (!Array.isArray(q.options) || q.options.length < 2 || q.options.length > 6) throw new Error(`${mod}/${q.key}: 2-6 options required`);
+    if (q.at !== undefined && !/^\d{2}:\d{2}$/.test(q.at)) throw new Error(`${mod}/${q.key}: "at" must be mm:ss`);
     if (!Number.isInteger(q.answer) || q.answer < 0 || q.answer >= q.options.length) throw new Error(`${mod}/${q.key}: answer out of range`);
     if (new Set(q.options).size !== q.options.length) throw new Error(`${mod}/${q.key}: duplicate options`);
   }
@@ -38,8 +39,10 @@ ${anchor}`);
 
 // ---- seed
 const q = (v) => `'${String(v).replace(/'/g, "''")}'`;
+// Explanation + where to rewatch, e.g. "(Covered in the training video at 3:38.)"
+const explain = (x) => [x.why ?? '', x.at ? `(Covered in the training video at ${x.at.replace(/^0(?=\d:)/, '')}.)` : ''].filter(Boolean).join(' ');
 const values = Object.entries(QUESTIONS).flatMap(([mod, qs]) => qs.map((x, i) =>
-  `  (${[q(mod), q(x.key), i + 1, q(x.q), `${q(JSON.stringify(x.options))}::jsonb`, x.answer, q(x.why ?? '')].join(', ')})`)).join(',\n');
+  `  (${[q(mod), q(x.key), i + 1, q(x.q), `${q(JSON.stringify(x.options))}::jsonb`, x.answer, q(explain(x))].join(', ')})`)).join(',\n');
 const keyList = Object.entries(QUESTIONS).flatMap(([mod, qs]) => qs.map((x) => `(${q(mod)}, ${q(x.key)})`)).join(', ');
 
 const sql = `/*

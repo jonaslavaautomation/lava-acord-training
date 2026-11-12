@@ -1,0 +1,150 @@
+# ACORD 140 training video — automatic transcript (Whisper small.en). Expect minor speech-recognition errors (e.g. "Accord"/"a court" = ACORD).
+[00:00] Alright, so today we'll be going over the Accord Form 140 for the property section of
+[00:07] a commercial insurance application.
+[00:09] Keep in mind that this property coverage is limited to the location.
+[00:15] So for example, if there was a contractor or some type of mobile business and they carried
+[00:20] equipment and tools away from their primary location, then that would have to be covered
+[00:26] on an England marine policy.
+[00:29] So this only covers the business personal property for the location and usually about 1000 feet
+[00:38] surrounding that location.
+[00:40] Keep in mind that this application has to be filled out with the Accord 125.
+[00:46] This application by itself, you will not be able to get a quote from a carrier.
+[00:50] You will have to fill it out along with the general commercial insurance application which
+[00:56] is the Accord Form 125.
+[00:59] The only sections that we'll be filling out are the sections necessary in order to get
+[01:05] a quote.
+[01:06] Starting here in the top right hand corner, we will put the date.
+[01:11] This is the date that the application filled out here.
+[01:15] In the top left hand corner, you will put your agency name.
+[01:22] Moving on, we will put the effective date.
+[01:25] We always like to go at least one week in advance.
+[01:27] Of course, some carriers will vote the same day or within two or three days, but some take
+[01:34] longer than that.
+[01:35] So we like to give ourselves at least one week and that way we give ourselves a little bit
+[01:42] of room to pass information back and forth between us, the carrier and the applicant.
+[01:48] Right here, you will put your name and shirt if it is a business entity, meaning they have
+[01:54] an LLC or some other type of corporation.
+[01:56] You will put the name of that entity here with the LLC.
+[02:02] They do not have a business entity, meaning it is a sole proprietorship or individually
+[02:08] owned.
+[02:09] You will put their first name, last name, GBA for doing business as, and then their business
+[02:17] name.
+[02:18] But for this example, we will assume that they have an LLC.
+[02:22] All right, so getting started here with the premises or the location.
+[02:29] This will be the location where the business is registered.
+[02:34] So premises just means location, it will be premises number one, building number one,
+[02:41] and on this of core 140 is two pages, but the pages are identical.
+[02:47] So they do that because if you had multiple buildings or multiple locations, and you will
+[02:53] fill out a core section for each location or each building.
+[02:59] Now just like on the 125, the premises mean location, start with one.
+[03:05] If there is more than one building at the same location, then the second portion you
+[03:11] will fill out is location number one, indicating that the second building is at the same
+[03:17] address.
+[03:18] So there's no address change, and you will go with building number two.
+[03:22] If there is a separate location that has a separate address, then this would be location
+[03:29] number two or premises number two, and you will start over back at one, meaning that
+[03:35] this is the first building at that second location.
+[03:38] All right, so moving back up here, this is where you will put the address where the
+[03:45] business is located at that first location, and then a building description for purposes
+[03:51] of this example, we'll say that this is their office location.
+[03:57] All right, and the subject of insurance, there's only two options that you will have here.
+[04:03] First being the building and business personal property, or you can just put BPP here,
+[04:13] that stands for business personal property.
+[04:19] So the building insurance covers the actual building itself, if they do not own the building,
+[04:26] meaning they lease or rent from the person who actually owns the building, then they
+[04:32] will not need building coverage, you would just remove that, you would only have business
+[04:37] personal property here.
+[04:39] Now with the amount of coverage, this is when you would use your cost evaluator.
+[04:44] If you do not have that cost evaluation tool, then you will have to put kind of an estimate
+[04:52] or an educated guess here.
+[04:54] And a good ballpark figure is a 120 multiplied by the square footage of the building.
+[05:02] So in this case, we'll assume that the building is 4000 square feet, and 120 times 4000 gives
+[05:09] us $480,000, the co insurance, the magic number percentage seems to be about 80%.
+[05:19] And this is just saying that $480,000 is at least 80% of that building's value.
+[05:30] Inflation would be RCV or replacement cost value.
+[05:36] Cause of loss would be special, meaning the broadest form of coverage available.
+[05:42] Inflation guard, usually 7 or 8% is good.
+[05:47] And what this means is when the policy is up for renewal, in order to keep up with inflation
+[05:54] year after year, then this amount will be increased by 7% to protect against inflation.
+[06:02] The deductible, you do not have to put anything here.
+[06:05] But if the customer or client specifies what they want their deductible to be, feel free
+[06:10] to put something there.
+[06:12] If you do $1,000 seems to be a good common standard.
+[06:19] Now for the amounts of coverage on the business personal property.
+[06:23] This is also known as the contents coverage.
+[06:26] And it's anything that the business owns, that's not the building itself, or physically attached
+[06:33] or bolted to the building itself.
+[06:36] So for this example, we'll just assume they have about $50,000 in business personal property
+[06:43] or contents, and then co insurance will be the same.
+[06:48] And cost value, cause of loss will be special.
+[06:53] We'll use the same inflation guard percentage.
+[06:56] And for this example, we'll say $1,000 deductible.
+[07:00] Now this additional information box has two things listed here.
+[07:05] Business income, we always want to check that.
+[07:08] This is coverage for the business in case they have to cease or stop doing business due to
+[07:14] a covered loss.
+[07:16] Business coverage could be used to pay for utility bills and in some cases, key employee
+[07:20] salaries until the business is able to get back up and running again.
+[07:26] So additional coverages, spoilage coverage is covers for any type of perishable that's
+[07:33] kept in a refrigeration type unit.
+[07:36] So this will be for your restaurants to have food items, and also any other business that
+[07:42] has things that could be spoiled, if say like the utilities went out, a good example
+[07:47] would be a floral shop that has flowers if the utilities went out, and those flowers weren't
+[07:54] able to be stored in the conditions that they needed.
+[07:58] Those flowers would die and this would be a cause of loss that would be covered under
+[08:04] spoilage coverage, it would pay to replace the cost of those flowers.
+[08:10] If the applicant or the insured request sinkhole coverage, you can accept or you can reject
+[08:17] that here and put a limit.
+[08:19] If the property has been designated as a historical landmark, you would indicate this box here.
+[08:26] But we'll go with most cases and just skip past that part down to construction type.
+[08:33] There's usually three types of construction, there's either frame, masonry, or joystick
+[08:38] masonry.
+[08:39] Alright, so for this example, we'll say joystick masonry.
+[08:44] This is a fire hydrant.
+[08:46] If you don't have this, you can find it on Google, like Google Maps Fire District, you
+[08:51] can leave that blank.
+[08:52] Code number, you can leave that blank, they do like for you to have the protection class
+[08:57] and you can usually just type in the county city or zip code and fire protection class on
+[09:03] Google and it'll have that information available to you.
+[09:06] Number of stories, basements, the year the building was built and total area, I think
+[09:13] we said we'll put 4,000 square feet for this example.
+[09:17] For the building improvements, you will want to ask the customer and we'll say this roof
+[09:23] was replaced in 2005 and if this other stuff hasn't been replaced or improved, you can
+[09:30] leave a blank indicating that it is the original.
+[09:33] If they have upgraded or replaced, you have this stuff to make sure you want to put the
+[09:39] date that it was replaced or upgraded.
+[09:44] So we'll just assume they had a complete remodeling in 2010.
+[09:49] Roof type, you will want to put that for this one, we'll assume it's a flat roof and
+[09:56] a flat roof could be either gravel or it could be rubber membrane.
+[10:03] Moving on, if there is a heating source that is a wood burning or stove, you will want
+[10:09] to indicate that here or if there's a boiler or a solid fuel heating but most of the time
+[10:16] it'll be something like force induction, alright.
+[10:20] Moving on to the exposure and distance, if you don't have this information, you can
+[10:26] find it simply on Google Maps.
+[10:28] So we'll say to the right there's a retail store, 75 feet to the left and maybe parking
+[10:37] lot, 100 feet, front exposure, there's a main street at 100 feet and rear exposure will
+[10:46] say there's a tree line that's about 200 feet back.
+[10:52] For the burglar alarm type, you will have to put something here, so if they do not have
+[10:57] one, just put none.
+[11:00] If they do, say it's by ADT, you will have to put whether it is a central station or
+[11:07] a local gong, local gong meaning that it'll just make a bunch of noise, central station
+[11:14] meaning that it will actually contact and notify authorities, that way that can be dispatched
+[11:20] to the location.
+[11:22] And with keys, it says that whoever is dispatched actually has keys to the insured location.
+[11:32] Same thing with fire, they have none, you put none, if they do, then you will need to
+[11:38] indicate whether that is central station, like I said meaning it will contact the authorities
+[11:43] itself and local gong meaning it'll just make a bunch of noise and also if the building
+[11:49] is sprinkler, you do want to put the percentage of sprinklers here.
+[11:55] So if half the building is sprinkler, you will put 50% or if the full building is sprinkler,
+[12:00] you will put 100% here.
+[12:03] Now that is all you need in order to generate a quote for a property.
+[12:08] If they have any additional interest like a lost payee or a mortgagee, you will just pop
+[12:13] that information in here and like I said, the second page is identical to the first
+[12:18] page, they don't have multiple locations or buildings, then you will not need to fill
+[12:23] any of this out.
+[12:24] The only thing you will need to do is sign, print your name, then have the applicant sign
+[12:31] and date it.
+[12:33] But like I said, with the Accord Form 125, that signature is not required to get a quote,
+[12:40] but it will be required if you are looking to bind the coverage.
+[12:45] So that is all for the Accord Form 140 property section when you are looking to get commercial
+[12:53] insurance quotes.

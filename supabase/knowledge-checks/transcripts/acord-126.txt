@@ -1,0 +1,73 @@
+# ACORD 126 training video — automatic transcript (Whisper small.en). Expect minor speech-recognition errors (e.g. "Accord"/"a court" = ACORD).
+[00:00] All right today we'll be going over the Accord Farm 126 or the Commercial General Liability Farm.
+[00:06] This is the farm which we'll fill out with an Accord 125 in order to get a general liability
+[00:13] quote for a business. So to jump right into it the date goes in the top right hand corner.
+[00:20] We'll put that here. Next you will fill out your agency information right here in the top
+[00:26] left hand corner. All right and we'll put the effective date. We like to put it out for at
+[00:33] least one week in advance. So we'll put this one for you. That right here is where the applicants
+[00:41] or the business name will go. If they have a business entity then you will put that entity name here.
+[00:47] So if it's an LLC we'll put the LLC name. However if they do not have a business entity
+[00:54] meaning it is solely owned or solely proprietorship then you will put their first and last name
+[01:04] one business as name of the business. But for this example we will say we'll put it in the LLC.
+[01:12] All right so the coverages they're looking for obviously is commercial general liability and
+[01:17] we will make this an occurrence policy meaning that the insurance carrier that is providing the
+[01:25] coverage at the time of the occurrence it will be held liable for that claim. If there were a
+[01:31] claims made policy then the insurance carrier providing coverage at the time of the claim
+[01:39] will be held liable for that claim even though the actual incident may have occurred before
+[01:46] that particular carrier was covering the business. So moving on to the limits now a standard limit or a
+[01:56] common limit is usually a split limit of two million and one million meaning the policy will
+[02:01] pay up to two million dollars for the year aggregate here meaning year and up to one million
+[02:09] dollars for any single incident. So we'll put two million here and then for each occurrence
+[02:17] meaning any single incident we'll put one million here. All right limits will apply per policy
+[02:26] in most cases products and completed operations aggregate of course aggregate meaning for the
+[02:33] entire policy or for the year. This coverage is the liability covers for any products which
+[02:39] are products that you make or completed operations. Now where this comes into play is a lot of times
+[02:45] with contractors or any mobile or servicing operations. Your premises will be defined as
+[02:53] the place where you're working while you're working there so you want to make sure that
+[02:58] they have this completed operations coverage because that gives them coverage after they leave
+[03:04] the job site. All right so for personal and advertising injury this is coverage for instances
+[03:12] where you may be held liable for injury other than physical so for another business's loss
+[03:18] of income due to something may have said in the article slander they come after you and sue you
+[03:24] and this is where this coverage will kick in and another standard is typically one million or half
+[03:34] of the general aggregate liability limits. Damage to rent premises is demonstrating property that is
+[03:43] rented to you. It could be leasing a building, leasing equipment anything like that medical expense.
+[03:50] This is basically coverage that your policy will pay out in the event that there's some type of
+[03:57] bodily injury done to a third party and this is coverage that will give you a limit that you can
+[04:03] pay without having to go to court for that incident. All right moving on to other coverages
+[04:10] you don't have to fill this out but one common other coverage would be
+[04:15] um hired and non-owned out of meaning when any employee or the owner himself or herself uses
+[04:27] their personal vehicle for business purposes if they were to be in an incident while they were used
+[04:32] at personal vehicle for business purposes the personal insurance policy um would likely not
+[04:40] want to pay for the liability damages caused in that incident so this is where the hired and
+[04:46] non-owned auto coverage will come in and it will cover the liability of that personal vehicle when
+[04:52] used for business purposes. All right moving on to schedule of hazards this will be at location one
+[05:01] and let's say they have first hazard here you do not have to put the class code but the premium
+[05:07] basis when all else fails use sales sales can be used as sort of a standard for any quote
+[05:17] the only other time you would use something else is say they have an apartment building
+[05:24] or a hotel or something like that you would use you for per unit or if they were a contractor
+[05:33] and you would use payroll or if they were a landlord then you would use area for per 1000
+[05:42] square feet so for our example we will use s for sales and we will just say
+[05:50] you do a hundred fifty thousand dollars in gross sales per year meaning they have a hundred fifty
+[05:58] thousand dollars in exposure that's all you have to fill out here. All right moving right along here
+[06:05] if it is a claims made policy then you would answer claims made questions here but for this
+[06:11] example um it's my current policy so we're just going to skip right past that also employee benefits
+[06:17] liability if you do select the employee coverage which would be here employee benefits then you
+[06:26] would have to fill that out but for this example um we are not covering the employees now for
+[06:32] contractors if they do subcontract out any work then you would have to fill contractors section
+[06:40] out and you will just ask them each of these questions and answer yes or no if the answer
+[06:46] is yes to any of these questions we will have to provide a brief explanation or description
+[06:52] for any of those yes answers all right now for products slash completed operations if they
+[06:59] actually sold products meaning products that they made and sold and you have to fill this out for
+[07:06] service-based businesses that do not have any products then you would not need to fill this
+[07:11] out you can skip right over it if they do have products you need to fill out these questions here
+[07:19] and they're pretty self-explanatory so moving on to the yes and no questions all right
+[07:27] then we can go right down to general information these are questions that have to be filled out
+[07:33] regardless of what type of business it is and just like previously if you answer yes to any
+[07:40] of these questions then you will have to provide a brief explanation or description of why the
+[07:47] answer is yes to that question but for this example we'll assume that the answer to all of these
+[07:54] are no all right and that is pretty much it you will put your name here that produces name
+[08:03] your signature here and then you will have the applicant sign and date it now the applicant
+[08:09] signature and date is not required in order to get a quote back from the carrier but it is
+[08:16] required when you are going to find that coverage also this effective date here will have to show
+[08:23] and reflect the date of binding and that is all for the commercial general liability section
+[08:30] also known as the accord form 126

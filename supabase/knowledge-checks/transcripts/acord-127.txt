@@ -1,0 +1,71 @@
+# ACORD 127 training video — automatic transcript (Whisper small.en). Expect minor speech-recognition errors (e.g. "Accord"/"a court" = ACORD).
+[00:00] In this video, I'm going to explain to you how to complete a business auto section, a
+[00:04] court also known as a court one to seven form.
+[00:07] So the court form is going to be very simple, very easy to fill out.
+[00:11] I'm going to show you step by step what to do and how to do it.
+[00:15] The first thing first you need to do is put your agency agency is whatever business you're
+[00:20] obviously working for.
+[00:21] So let's say if you're working for sales insurance agency, that's going to be name
+[00:25] of the agency.
+[00:26] The carrier is not that important.
+[00:28] You don't have to put down anything over here as of now, because sometimes, especially
+[00:33] when you're giving new quotes to the customers, you don't have a really have a carrier.
+[00:37] So you leave this blank.
+[00:39] Same goes for the NAIC code, you leave it blank agency customer ID.
+[00:43] Now some certain times you have the customer and you're trying to give them another, especially
+[00:48] if you're a broker, you're trying to give them, you know, looking to, you know, help
+[00:52] the customer out, get a cheaper rate.
+[00:54] That agency customer ID works into effect for that other than that is run.
+[00:58] If you're basically having a new customer, you don't really need to have this date is the
+[01:03] day you're actually writing the, you know, quote for it.
+[01:06] So that's the day you put policy number again, if you have the customer, you have it, or
+[01:10] if the customer knew from previous policy number, you could get that effective data
+[01:14] as well.
+[01:15] Name insured or insured.
+[01:17] Sometimes there's more than one.
+[01:18] You put down the information right over here.
+[01:20] Obviously drive information is going to be a code 163, because since you are doing
+[01:25] the business auto section is going to be to record from this one is a 137 record form.
+[01:29] So you need that and 163 as well.
+[01:32] Number of drivers.
+[01:33] So whatever it is, one driver, or you know, driver number one, do you need to city, state
+[01:39] and zip, sex, male and female, you put all the information basically the pedigree information.
+[01:44] And obviously you have more than one driver, you put that information down as well.
+[01:48] And once you do that part, there's going to be yes or no questions.
+[01:51] For example, the vehicle maintenance program in operation, yes or no?
+[01:56] Are any vehicle leads to others?
+[01:58] These questions are going to be used to ask towards the driver.
+[02:01] So let's say, if you're the broker, you're going to be asked asking these questions to
+[02:05] the driver or the company.
+[02:07] So all these questions, yes or no questions, you had to ask them all these questions, then
+[02:12] number 17, do you have an electronic monitoring device that record and transmit data in any
+[02:17] of your vehicle?
+[02:18] Obviously, if you do that, that means that you do get a discount rate on your insurance.
+[02:23] For example, you have a built-in navigation, you have a monitor vehicle maintenance, whatever
+[02:26] it is, you get an additional interest or interception, sometimes you're leasing certain
+[02:33] cars or whatever the case is, or you have another additional insured on it.
+[02:38] So basically, they ask for that part as well.
+[02:40] If not, then you usually leave the blank remarks of court one on one, usually you
+[02:45] don't fill out a court one on one.
+[02:47] So this is the room mark section to ask them basically, you know, like you want the underwriter
+[02:51] to know any specific detail about the insured.
+[02:54] For example, like the car is this, this, this, this, or whatever it is, you fill basically
+[02:58] it's like a comment section over here.
+[03:00] Once you do that part, there's going to be a description of the court one to nine
+[03:05] attached for additional vehicles, there's only one thing you don't need.
+[03:09] Vehicle number here, make all these questions should be filled out as well.
+[03:13] Obviously, you need to know what vehicle you're doing.
+[03:15] So example, if you're doing the 2018 Toyota Camry vehicle number one, your 2018 make model
+[03:21] body type and then you need all the information, vehicle type, is it a commercial is a specific
+[03:27] whatever is system age, call system, they usually have that whoever does commercial
+[03:32] auto department, your underwriters also help you out with certain things, garaging address
+[03:37] is whatever your address of that vehicle is stays in it.
+[03:42] You need that part as well.
+[03:44] As a state, all these questions are what are using for using for pleasure or use of the
+[03:49] form, service, commercial, check coverage, whichever all these questions are going to be towards
+[03:55] the vehicle.
+[03:56] Obviously, we have more than one more than one vehicle as you can see the same exact
+[03:59] thing.
+[04:00] Once you fill that part up, again, remarks or code 104, you don't have to do one on
+[04:04] one record for no more usually does it, but you can just put the remarks section
+[04:07] over here again.
