@@ -1,0 +1,118 @@
+# ACORD 130 training video — automatic transcript (Whisper small.en). Expect minor speech-recognition errors (e.g. "Accord" = ACORD).
+[00:09] students have elevated success. Today we're going to go over the Accord 130
+[00:12] which is a work comp application. You'll always start with the date up at the top
+[00:17] right hand side. Next you'll go to your agency name and address on the far left.
+[00:23] You'll want your producer name, your office phone number, and your email
+[00:28] address. You can put on your cell phone or fax if you'd like them to have it.
+[00:32] You can also add the customer service representative if you have one or if
+[00:38] you'd like them to be able to contact them. You can add their information in
+[00:43] there, just their name. Next on the right hand side you do not need to put company
+[00:47] or underwriter but you will need the applicant name. For this example I'm
+[00:51] using ABC Pizza LLC. You'll want their office phone number. If they have a
+[00:55] cell phone you can put that here. The year in business you do not need to
+[01:00] fill out the SIC or the NAICS and then if they have a website it's always good
+[01:06] to put it in there but you do not have to to get a quote and then on the left
+[01:09] side you'll want their mailing address. It does ask to include the four
+[01:15] additional four zip code on the end. You don't need to do that for the
+[01:20] quote. Next you'll fill out their email address and then the structure of their
+[01:25] businesses. For this example I used LLC and then their federal employee number. You
+[01:32] do not need the NCCI risk number ID. You can put the ID number in there if you
+[01:38] want but really what you need to get a quote is the federal ID number. Next
+[01:43] you'll want the status of the submission which for this example we're
+[01:46] doing quote because we're just trying to get a quote. Next for billing you would
+[01:52] want either direct bill or agency bill. Most work comp is direct and then how
+[01:58] they're paying it whether that's annual, semiannual, or quarterly. The audit
+[02:02] information doesn't necessarily need to be filled out to get a quote but you
+[02:05] could pick one if you need to or would like to. Next section is locations. So
+[02:12] you're gonna want to list all the locations that they have. For this
+[02:15] example our insurance only has one location so I put their address here.
+[02:19] For policy information you only need oh one more thing on locations. So if
+[02:25] someone is working from home you are going to want to add that location here
+[02:30] as well for work comp. For policy information you have the proposed
+[02:35] effective date that would be required. Any work comp states under part one any
+[02:41] states that they're operating in along with the employers liability coverage
+[02:46] that they're looking for. If there are any other states that they operate you'd
+[02:50] want to list them here. Next you would go down to contact information. You don't
+[02:55] need to fill out contact information if you're submitting it within Accord 125
+[02:59] but you would want to fill out who they would need to contact for the
+[03:03] inspection. Accounting records claims information. If you only put one contact
+[03:08] information here obviously they're going to use it for the same. So I
+[03:12] usually fill it out even if I fill out an Accord 125 just because I like it to be
+[03:17] complete. So this section individuals be included or excluded. This would be any
+[03:22] partners, officers, relatives that is employed by the business operations. They
+[03:28] have to either be included or excluded. This one's a hundred in this example a
+[03:33] hundred percent owned by John Smith. If it had two owners you would need to put
+[03:38] them both in this section. You'd list the state that they're in, the location
+[03:43] they're at, their name, date of birth, their title or relationship, ownership and
+[03:48] their duties. And then here you would do excluded or included. If they're
+[03:54] included you will need to add the class code and the payroll as well for each
+[03:59] person listed. Going down under state rating worksheet here is where
+[04:06] you would list all the different types of jobs people have. So for each duty
+[04:11] they would need to have their own separate class code and you would need
+[04:16] to list the payroll. So this one for location 1 under Florida it's a 90-70
+[04:21] class code, restaurant not otherwise classified. Depending on your state you
+[04:26] may need to list other occupations but this one we just need that listed and
+[04:32] then the number of full-time part-time employees and then the payroll.
+[04:36] Obviously if you had other people doing other let's say it was an office and
+[04:41] you had a clerical person you would want to list clerical here. They're not
+[04:45] going to be rated quite as high as some of the other class codes. Again I would
+[04:51] always call NCCI and get the correct class code before sending it in. You can
+[04:59] call them, you can set up an account but they will give you this information
+[05:03] for at no charge if you give them a call. We did explain that in the class
+[05:07] but again you can give them a call to get the correct class code for each
+[05:11] occupation or each operation that they're doing duties. Down here under
+[05:17] premium you really don't need to fill anything out this is mostly for
+[05:20] discounts. If they have an experience mod you can list that here and then
+[05:26] under any additional information you might want to attach you can put the
+[05:30] remarks here. If there's more information that you want to attach you
+[05:33] would need to attach in a core 101. Next is prior carrier information and loss
+[05:38] history. If they've had losses you can always attach the loss run here but you
+[05:44] would want to include all information in the past five years for loss details so
+[05:49] you would put the year, the company, the policy number, the annual premium, the
+[05:53] mod, the number of claims for that carrier, the amount paid and if
+[05:58] obviously it's either amount paid or reserve if something is still open it
+[06:02] would be under reserve otherwise it's going to be under amount paid. Under
+[06:05] nature of business description of operations if you have an Accord 125 you
+[06:09] don't need to fill it out. I like to fill everything out I can fill out for the
+[06:13] underwriter so they don't have to flip back and forth between pages but you
+[06:19] would put your description of operations here that does need to be filled out.
+[06:23] And last you go down to the general information which is all the questions
+[06:27] that need to be answered. Most of these won't apply depending on the type of
+[06:32] operation but if they own or lease watercraft or aircraft this would be
+[06:38] need to say yes with an explanation. If they're disposing of any hazardous
+[06:43] material number three work performed underground or above 15 feet. Number four
+[06:50] any work performed on you know vessels, docks, bridges, anything over water and if
+[06:58] they're engaged in any other type of business under number five. Number six if
+[07:02] subcontractors are used you would need to give the percentage of work that is
+[07:07] subcontracted. Number seven if the sub is working without a certificate you need
+[07:13] to say yes and explain why. The payroll must be included in the rating worksheet
+[07:19] if that's the case. Written safety operation if they have that you would
+[07:23] need to advise any group transportation provided. Number nine number ten anyone
+[07:29] working under 16 or over 60 you would need to click advise of that. Seasonal
+[07:36] employees volunteer or donated labor anyone with physical handicaps. If
+[07:41] employees work out of state you'd want to say yes and the frequency this is
+[07:45] obviously very important as we learned in the class if this is the case you
+[07:48] want to make sure that they're going to be covered you do want this to be known.
+[07:52] Our athletic team sponsored question you don't ever really see yes to 16 are
+[07:59] physical required after offers of employment if they are you'd want to let
+[08:05] them know any other insurance with this insurer usually that's no. Number 18 any
+[08:11] prior coverage denied canceled non-renewed in the last three years.
+[08:16] Missouri applicants do not need to answer this question if this is a yes
+[08:21] you do want to give an exclamation of what happened. If there are health plans
+[08:26] provided you would want to click yes if any employees perform work for any other
+[08:31] businesses subsidiaries you'd want that known as well and then if employees are
+[08:37] leased to or from other employers if anyone works from home you'd want to
+[08:41] click yes and number of employees any tax liens or bankruptcy in the last five
+[08:46] years and any undisputed and unplanned paid work comp premium due so that would
+[08:54] also be need to be collected you would need to say yes and give an
+[09:00] explanation with the entity's name and policy number and then last is the
+[09:04] signature so you can click X here to save the copy of the notice of
+[09:10] practices that's been given and have them initial it's not applicable in
+[09:15] these states listed here Arizona California Delaware Kansas Maine Minnesota
+[09:20] North Dakota New York or Virginia or West Virginia and then they just need
+[09:26] to sign obviously for the quote you don't need to sign but when you go to
+[09:30] bind you would need the applicant signature your signature the date and
+[09:34] your national producer number and that's all there is to it if you have any
+[09:38] questions please don't hesitate to reach out to me at info at elevated
+[09:41] success online.com you can also find us at www.elevatedsuccessonline.com to
+[09:48] take our training class thank you so much for watching

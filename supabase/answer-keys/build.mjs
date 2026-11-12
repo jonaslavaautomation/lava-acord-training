@@ -39,7 +39,7 @@ if (process.argv.includes('--check')) {
       const nrx = r.name_rx && new RegExp(r.name_rx, 'i');
       const trx = r.tip_rx && new RegExp(r.tip_rx, 'i');
       const cands = fields
-        .filter((f) => (r.field_kind === 'checkbox' ? f.type === 'checkbox' : ['text', 'date', 'dropdown'].includes(f.type)))
+        .filter((f) => (r.field_kind === 'checkbox' || r.field_kind === 'radio' ? f.type === r.field_kind : ['text', 'date', 'dropdown'].includes(f.type)))
         .map((f) => ({ ...f, byName: !!nrx && nrx.test(f.name.replace(/\[\d+\]/g, '')) }))
         .filter((f) => f.byName || (trx && trx.test(f.tip)))
         .sort((a, b) => Number(b.byName) - Number(a.byName) || a.page - b.page || a.idx - b.idx);
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS lava_private.answer_key_rules (
   name_rx text,
   tip_rx text,
   nth integer NOT NULL DEFAULT 1,
-  field_kind text NOT NULL DEFAULT 'text' CHECK (field_kind IN ('text', 'checkbox')),
+  field_kind text NOT NULL DEFAULT 'text' CHECK (field_kind IN ('text', 'checkbox', 'radio')),
   expected_value text NOT NULL DEFAULT '',
   match_type text NOT NULL CHECK (match_type IN ('exact', 'contains', 'any-of', 'keywords', 'present')),
   points integer NOT NULL DEFAULT 1,
@@ -91,6 +91,8 @@ CREATE TABLE IF NOT EXISTS lava_private.answer_key_rules (
   sort_order integer NOT NULL DEFAULT 0,
   PRIMARY KEY (module_id, rule_key)
 );
+ALTER TABLE lava_private.answer_key_rules DROP CONSTRAINT IF EXISTS answer_key_rules_field_kind_check;
+ALTER TABLE lava_private.answer_key_rules ADD CONSTRAINT answer_key_rules_field_kind_check CHECK (field_kind IN ('text', 'checkbox', 'radio'));
 REVOKE ALL ON lava_private.answer_key_rules FROM PUBLIC, anon, authenticated;
 
 DELETE FROM lava_private.answer_key_rules;
@@ -129,7 +131,7 @@ BEGIN
       SELECT x.*, (r.name_rx IS NOT NULL AND regexp_replace(x.field_name, '\\[\\d+\\]', '', 'g') ~* r.name_rx) AS by_name
       FROM public.pdf_form_fields x
       WHERE x.material_id = p_material_id
-        AND CASE WHEN r.field_kind = 'checkbox' THEN x.field_type = 'checkbox'
+        AND CASE WHEN r.field_kind IN ('checkbox', 'radio') THEN x.field_type = r.field_kind
                  ELSE x.field_type IN ('text', 'date', 'dropdown') END
     ) c
     WHERE c.by_name OR (r.tip_rx IS NOT NULL AND coalesce(c.tooltip, '') ~* r.tip_rx)

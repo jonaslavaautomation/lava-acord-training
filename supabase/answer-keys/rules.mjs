@@ -115,29 +115,55 @@ export const RULES = {
   ],
 
   // ------------------------------------------------------------------ ACORD 130 — Summit Roofing & Solar
-  // Name-based rules for the standard fillable ACORD 130. Verify the match count after uploading.
+  // Built for the fillable "Acord-130-2019.pdf" (plain-English field names such as "APPLICANT NAME",
+  // "CLASS CODERow1_2"); the standard ACORD names are listed as alternatives where they exist.
   '130': [
-    { key: 'ni_name', label: 'Applicant name', n: 'NamedInsured_FullName_A', v: 'Summit Roofing', match: 'contains', pts: 5, req: true },
-    { key: 'ni_addr1', label: 'Mailing address — street', n: 'NamedInsured_MailingAddress_LineOne_A', v: '3200 Commerce Center', match: 'contains', pts: 3 },
-    { key: 'ni_city', label: 'Mailing address — city', n: 'NamedInsured_MailingAddress_CityName_A', v: 'Denver', match: 'exact', pts: 2 },
-    { key: 'ni_state', label: 'Mailing address — state', n: 'NamedInsured_MailingAddress_StateOrProvinceCode_A', v: state('CO', 'Colorado'), match: 'any-of', pts: 2 },
-    { key: 'ni_zip', label: 'Mailing address — ZIP', n: 'NamedInsured_MailingAddress_PostalCode_A', v: '80205', match: 'contains', pts: 2 },
-    { key: 'ni_fein', label: 'FEIN', n: 'NamedInsured_TaxIdentifier_A', tip: 'federal employer', v: '84-3920174|843920174', match: 'any-of', pts: 5, req: true },
-    { key: 'ni_llc', label: 'Legal entity — LLC', n: 'NamedInsured_LegalEntity_LimitedLiabilityCorporationIndicator_A', ...yes, pts: 3 },
-    { key: 'contact_name', label: 'Contact — name', n: 'NamedInsured_Contact_FullName_A', v: 'Rachel Kim', match: 'contains', pts: 3 },
-    { key: 'contact_phone', label: 'Contact — phone', n: 'NamedInsured_Contact_PrimaryPhoneNumber_A', v: phone('555-0123'), match: 'contains', pts: 2 },
-    ...[['5551', 850000, 18], ['5190', 420000, 8], ['8810', 280000, 4], ['7380', 190000, 5]].flatMap(([code, payroll, emps], i) => [
-      { key: `cc${i + 1}_code`, label: `Class ${i + 1} — class code`, tip: 'class(ification)? code', nth: i + 1, v: code, match: 'contains', pts: 4, req: i === 0 },
-      { key: `cc${i + 1}_payroll`, label: `Class ${i + 1} — annual payroll`, tip: 'remuneration|payroll', nth: i + 1, v: money(payroll), match: 'any-of', pts: 3 },
-      { key: `cc${i + 1}_emps`, label: `Class ${i + 1} — # employees`, tip: 'number of (full time )?employees', nth: i + 1, v: String(emps), match: 'exact', pts: 2 },
-    ]),
-    { key: 'el_each', label: "Employer's liability — each accident", tip: 'each accident', v: money(1000000), match: 'any-of', pts: 3 },
-    { key: 'el_policy', label: "Employer's liability — disease policy limit", tip: 'disease.{0,40}policy limit', v: money(1000000), match: 'any-of', pts: 3 },
-    { key: 'el_employee', label: "Employer's liability — disease each employee", tip: 'disease.{0,40}each employee', v: money(1000000), match: 'any-of', pts: 3 },
-    { key: 'other_states', label: 'Part Three — other states', tip: 'other states', v: 'UT WY NM AZ', match: 'keywords', pts: 3, hint: 'All four other states must be listed: UT, WY, NM, AZ.' },
-    { key: 'officer1_name', label: 'Owner/officer 1 — name', tip: 'name of the (owner|officer|individual)', nth: 1, v: 'Tyler Brennan', match: 'contains', pts: 3 },
-    { key: 'officer2_name', label: 'Owner/officer 2 — name', tip: 'name of the (owner|officer|individual)', nth: 2, v: 'Nicole Park', match: 'contains', pts: 3 },
-    { key: 'prior_carrier', label: 'Prior carrier', n: 'PriorCoverage_InsurerFullName_A', tip: 'name of the previous insurer', v: 'AmTrust', match: 'contains', pts: 2 },
+    { key: 'ni_name', label: 'Applicant name', n: '(APPLICANT NAME|NamedInsured_FullName_A)', v: 'Summit Roofing', match: 'contains', pts: 5, req: true },
+    { key: 'ni_phone', label: 'Applicant office phone', n: 'OFFICE PHONE', v: phone('555-0123'), match: 'contains', pts: 2 },
+    { key: 'ni_mailing', label: 'Mailing address', n: 'MAILING ADDRESS including ZIP  4 or Canadian Postal Code', v: '3200 Commerce Center Denver 80205', match: 'keywords', pts: 4, hint: '3200 Commerce Center Drive, Denver, CO 80205 (ZIP+4 is not needed for a quote).' },
+    { key: 'ni_entity', label: 'Legal entity — LLC', n: 'Group1', kind: 'radio', v: 'LLC', match: 'exact', pts: 3, hint: 'The applicant name ends in "LLC".' },
+    { key: 'ni_fein', label: 'Federal Employer ID (FEIN)', n: '(FEDERAL EMPLOYER ID NUMBER|NamedInsured_TaxIdentifier_A)', v: '84-3920174|843920174', match: 'any-of', pts: 6, req: true, hint: 'The video stresses the FEIN is what you need to get a quote.' },
+    { key: 'status_quote', label: 'Status of submission — Quote', n: 'STATUS OF SUBMISSION', kind: 'radio', v: 'QUOTE', match: 'exact', pts: 2 },
+    { key: 'loc1', label: 'Location 1 address', n: 'STREET CITY COUNTY STATE ZIP CODERow1', v: '3200 Commerce Center Denver', match: 'keywords', pts: 3 },
+    { key: 'eff_date', label: 'Proposed effective date', n: 'PROPOSED EFF DATE', v: '', match: 'present', pts: 2, hint: 'The proposed effective date is required.' },
+    { key: 'part1_states', label: 'Part 1 — WC states', n: 'PART 1  WORKERS COMPENSATION States', v: 'CO|Colorado', match: 'contains', pts: 3 },
+    { key: 'el_each', label: "Part 2 — EL each accident", n: 'EACH ACCIDENT', v: money(1000000), match: 'any-of', pts: 3 },
+    { key: 'el_policy', label: "Part 2 — EL disease-policy limit", n: 'DISEASE-POLICY LIMIT', v: money(1000000), match: 'any-of', pts: 3 },
+    { key: 'el_employee', label: "Part 2 — EL disease-each employee", n: 'DISEASE-EACH EMPLOYEE', v: money(1000000), match: 'any-of', pts: 3 },
+    { key: 'part3_states', label: 'Part 3 — other states', n: 'PART 3 - OTHER STATES INS', v: 'UT WY NM AZ', match: 'keywords', pts: 4, hint: 'List all four other states: UT, WY, NM, AZ.' },
+    ...[
+      ['Tyler Brennan', 'President', '60', 120000],
+      ['Nicole Park', 'VP|Vice President', '30', 95000],
+    ].flatMap(([name, title, pct, pay], i) => {
+      const R = i + 1;
+      const who = `Owner/officer ${R}`;
+      return [
+        { key: `off${R}_name`, label: `${who} — name`, n: `NAMERow${R}`, v: name, match: 'contains', pts: 3, req: R === 1 },
+        { key: `off${R}_title`, label: `${who} — title`, n: `TITLE RELATIONSHIPRow${R}`, v: title, match: 'contains', pts: 1 },
+        { key: `off${R}_pct`, label: `${who} — ownership %`, n: `OWNER SHIP Row${R}`, v: `${pct}|${pct}%`, match: 'any-of', pts: 2 },
+        { key: `off${R}_inc`, label: `${who} — included`, n: `INCEXCRow${R}`, v: 'INC|Included|Include|I', match: 'any-of', pts: 3, hint: 'Both active owners are included in coverage.' },
+        { key: `off${R}_class`, label: `${who} — class code`, n: `CLASS CODERow${R}`, v: '', match: 'present', pts: 1, hint: 'Included individuals need a class code and payroll.' },
+        { key: `off${R}_pay`, label: `${who} — payroll`, n: `REMUNERATIONPAYROLLRow${R}`, v: money(pay), match: 'any-of', pts: 2 },
+      ];
+    }),
+    { key: 'rating_state', label: 'State rating worksheet — state', n: 'STATE', v: 'CO|Colorado', match: 'any-of', pts: 1 },
+    ...[
+      ['5551', 'roof', 18, 850000],
+      ['5190', 'solar|electric', 8, 420000],
+      ['8810', 'clerical|office', 4, 280000],
+      ['7380', 'sales|outside', 5, 190000],
+    ].flatMap(([code, desc, emps, payroll], i) => {
+      const R = i + 1;
+      const c = `Class ${R} (${code})`;
+      return [
+        { key: `cc${R}_code`, label: `${c} — class code`, n: `CLASS CODERow${R}_2`, v: code, match: 'contains', pts: 4, req: R === 1, hint: 'Each type of work gets its own class code — confirm codes with NCCI.' },
+        { key: `cc${R}_desc`, label: `${c} — description`, n: `CATEGORIES DUTIES CLASSIFICATIONSRow${R}`, v: desc, match: 'contains', pts: 1 },
+        { key: `cc${R}_ft`, label: `${c} — full-time employees`, n: `FULE TIME_${R}`, v: String(emps), match: 'exact', pts: 2 },
+        { key: `cc${R}_payroll`, label: `${c} — annual payroll`, n: `ESTIMATED ANNUAL REMUNERATION PAYROLLRow${R}`, v: money(payroll), match: 'any-of', pts: 3 },
+      ];
+    }),
+    { key: 'prior_carrier', label: 'Prior carrier', n: '(CO|PriorCoverage_InsurerFullName_A)', v: 'AmTrust', match: 'contains', pts: 2 },
+    { key: 'ops_desc', label: 'Description of operations', tip: '^GIVE COMMENTS AND DESCRIPTIONS OF BUSINESS', v: 'roofing solar', match: 'keywords', pts: 3, hint: 'Describe both operations: roofing and rooftop solar installation.' },
   ],
 
   // ------------------------------------------------------------------ ACORD 140 — BlueRidge Manufacturing
