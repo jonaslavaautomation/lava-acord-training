@@ -67,7 +67,11 @@ export async function POST(request: Request): Promise<Response> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-  if (!apiKey || !supabaseUrl || !supabaseKey) return json(503, 'The ACORD Assistant is not set up yet. Add ANTHROPIC_API_KEY to the .env file (on your PC) or to the Vercel environment variables.');
+  // CHAT_ENGINE=claude-code (local .env only): answer through Claude Code on this PC with the owner's Claude account.
+  const useClaudeCode = process.env.CHAT_ENGINE === 'claude-code' && !process.env.VERCEL;
+  if (!supabaseUrl || !supabaseKey || (!useClaudeCode && !apiKey)) {
+    return json(503, 'The ACORD Assistant is not set up yet. Add ANTHROPIC_API_KEY to the .env file (on your PC) or to the Vercel environment variables, or set CHAT_ENGINE=claude-code in .env to use Claude Code on your PC.');
+  }
 
   // Only signed-in users of the app.
   const token = (request.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
@@ -80,7 +84,8 @@ export async function POST(request: Request): Promise<Response> {
   if (authError || !auth.user) return json(401, 'Your session has expired. Please refresh the page.');
 
   // Who may use the assistant: CHAT_ACCESS = "admin" (default), "staff" (admin + trainers) or "everyone".
-  const access = (process.env.CHAT_ACCESS ?? 'admin').toLowerCase();
+  // A personal Claude plan (Claude Code engine) is for the owner only, so that mode is always admin-only.
+  const access = useClaudeCode ? 'admin' : (process.env.CHAT_ACCESS ?? 'admin').toLowerCase();
   if (access !== 'everyone') {
     const { data: me } = await supabase.from('profiles').select('role').eq('id', auth.user.id).maybeSingle();
     const allowed = access === 'staff' ? ['admin', 'trainer'] : ['admin'];
@@ -92,9 +97,27 @@ export async function POST(request: Request): Promise<Response> {
   const messages = toAnthropicMessages(body.messages);
   if (typeof messages === 'string') return json(400, messages);
 
-  const client = new Anthropic({ apiKey });
   const encoder = new TextEncoder();
 
+  if (useClaudeCode) {
+    const local = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const send = (s: string) => controller.enqueue(encoder.encode(s));
+        try {
+          const { streamViaClaudeCode } = await import('./_claude-code.js');
+          await streamViaClaudeCode(SYSTEM_PROMPT, messages, send);
+        } catch (err) {
+          console.error('ACORD Assistant (Claude Code) error', err);
+          send(`\n\n${(err as Error).message}`);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+    return new Response(local, { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } });
+  }
+
+  const client = new Anthropic({ apiKey });
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const send = (s: string) => controller.enqueue(encoder.encode(s));

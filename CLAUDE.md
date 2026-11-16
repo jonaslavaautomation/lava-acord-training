@@ -49,5 +49,7 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
 ## ACORD Assistant (`api/chat.ts`)
 Claude `claude-opus-5-5` with the video transcripts in a cached system prompt. Admin-only by default (enforced on the server and hidden in the UI).
 It coaches instead of giving quiz or assessment answers, and it must never receive answer keys or the assessment scenarios.
+On the owner's PC, `CHAT_ENGINE=claude-code` in `.env` makes it answer through the locally installed Claude Code CLI
+(`api/_claude-code.ts`, the owner's own Claude plan, no API key). That mode is always admin-only and never runs on Vercel.
 
 `DEVELOPMENT_SUMMARY.md` is an older build log: where it disagrees with this file, this file is current.
