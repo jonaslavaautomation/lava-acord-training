@@ -1,4 +1,4 @@
-import { FileText, ArrowRight, PlayCircle, CheckCircle, Target, RotateCcw, Clock3 } from 'lucide-react';
+import { FileText, ArrowRight, PlayCircle, CheckCircle, Target, RotateCcw } from 'lucide-react';
 import { useApp } from '../AppContext';
 import { ACORD_MODULES } from '../data/modules';
 import { Topbar } from '../components/Topbar';

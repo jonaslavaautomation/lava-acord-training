@@ -1,6 +1,6 @@
-import { TrendingUp, CheckCircle2, Clock3, Target, BookOpen, Award, BarChart3 } from 'lucide-react';
+import { CheckCircle2, Clock3, Target, BookOpen, Award, BarChart3 } from 'lucide-react';
 import { useApp } from '../AppContext';
-import { ACORD_MODULES, MODULE_MAP } from '../data/modules';
+import { ACORD_MODULES } from '../data/modules';
 import { Topbar } from '../components/Topbar';
 import { Badge, ProgressBar, ScoreRing, StatCard, SectionTitle } from '../components/ui';
 import type { AcordId } from '../types';
@@ -33,7 +33,6 @@ export function MyProgress() {
     hasScore: progress[mod.id].bestScore !== null,
   }));
 
-  const maxScore = 100;
 
   return (
     <div>

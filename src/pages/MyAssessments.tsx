@@ -3,7 +3,7 @@ import { ClipboardList, Target, Clock3, CheckCircle2, XCircle, MinusCircle, Chev
 import { useApp } from '../AppContext';
 import { ACORD_MODULES, MODULE_MAP } from '../data/modules';
 import { Topbar } from '../components/Topbar';
-import { Badge, ScoreRing, ProgressBar, SectionTitle } from '../components/ui';
+import { Badge, ScoreRing, SectionTitle } from '../components/ui';
 import type { AcordId, AttemptResult } from '../types';
 
 export function MyAssessments() {
