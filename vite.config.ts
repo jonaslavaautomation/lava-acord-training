@@ -23,8 +23,8 @@ function localApi(): Plugin {
             method: req.method, headers, body: req.method === 'POST' ? Buffer.concat(chunks) : undefined,
           });
           const mod = await server.ssrLoadModule('/api/chat.ts');
-          if (req.method !== 'POST') { res.statusCode = 405; res.end(); return; }
-          const response: Response = await mod.POST(request);
+          if (req.method !== 'POST' && req.method !== 'GET') { res.statusCode = 405; res.end(); return; }
+          const response: Response = req.method === 'GET' ? mod.GET() : await mod.POST(request);
           res.statusCode = response.status;
           response.headers.forEach((v, k) => res.setHeader(k, v));
           if (response.body) Readable.fromWeb(response.body as never).pipe(res);

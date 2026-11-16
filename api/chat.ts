@@ -63,6 +63,15 @@ function toAnthropicMessages(input: unknown): Anthropic.Beta.BetaMessageParam[] 
   return out;
 }
 
+/** Lets the chat window know whether it can answer here, before the user types anything. */
+export function GET(): Response {
+  const useClaudeCode = process.env.CHAT_ENGINE === 'claude-code' && !process.env.VERCEL;
+  const ready = !!process.env.VITE_SUPABASE_URL && (useClaudeCode || !!process.env.ANTHROPIC_API_KEY);
+  return new Response(JSON.stringify({ ready, engine: useClaudeCode ? 'claude-code' : 'api' }), {
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+  });
+}
+
 export async function POST(request: Request): Promise<Response> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const supabaseUrl = process.env.VITE_SUPABASE_URL;

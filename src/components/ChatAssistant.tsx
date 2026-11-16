@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Bot, ImagePlus, Loader2, MessageCircle, RotateCcw, Send, X } from 'lucide-react';
+import { Bot, ImagePlus, Laptop, Loader2, MessageCircle, RotateCcw, Send, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface ChatImage { media_type: string; data: string; preview: string }
@@ -104,6 +104,17 @@ export function ChatAssistant() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // null = still checking; false = this copy of the app can't answer (e.g. live site without an API key).
+  const [ready, setReady] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!open || ready !== null) return;
+    fetch('/api/chat', { method: 'GET' })
+      .then((r) => (r.ok ? r.json() : { ready: false }))
+      .then((d: { ready?: boolean }) => setReady(!!d.ready))
+      .catch(() => setReady(false));
+  }, [open, ready]);
+  const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [messages, open]);
   useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
 
@@ -190,6 +201,29 @@ export function ChatAssistant() {
         <button onClick={() => setOpen(false)} title="Close" className="p-1.5 rounded-md text-muted-400 hover:text-white hover:bg-bg-hover"><X className="w-4 h-4" /></button>
       </div>
 
+      {ready === false ? (
+        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-4 text-sm text-muted-400 leading-relaxed">
+          <div className="w-10 h-10 rounded-full bg-lava-600/15 flex items-center justify-center"><Laptop className="w-5 h-5 text-lava-400" /></div>
+          {isLocal ? (
+            <>
+              <p className="text-white font-medium">The assistant isn't switched on for this PC.</p>
+              <p>Add <code className="px-1 rounded bg-bg-base font-mono text-[12px]">CHAT_ENGINE=claude-code</code> to the <code className="px-1 rounded bg-bg-base font-mono text-[12px]">.env</code> file, then restart the app.</p>
+            </>
+          ) : (
+            <>
+              <p className="text-white font-medium">The assistant runs on your PC, using your Claude account.</p>
+              <p>This live website has no Claude API key, so it can't answer here. Open the app on your PC instead:</p>
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Double-click <span className="text-slate-200">Start ACORD Assistant</span> on your desktop.</li>
+                <li>Wait for the browser to open, then sign in and ask your question there.</li>
+              </ol>
+              <a href="http://localhost:5173/admin" className="btn-primary w-full py-2.5 text-center">Already started? Open it on my PC</a>
+              <p className="text-[11px] text-muted-500">To use the assistant on the live website (for example for trainees later), add an Anthropic API key in Vercel.</p>
+            </>
+          )}
+        </div>
+      ) : (
+      <>
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4 text-sm">
         {messages.length === 0 && (
           <div className="space-y-3">
@@ -259,6 +293,8 @@ export function ChatAssistant() {
         </div>
         <p className="text-[10px] text-muted-600">AI answers can be wrong. Check important details with your trainer.</p>
       </div>
+      </>
+      )}
     </div>
   );
 }
