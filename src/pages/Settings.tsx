@@ -1,4 +1,4 @@
-import { User, Mail, Calendar, Users, Clock, Bell, Globe, Shield, ChevronRight } from 'lucide-react';
+import { User, Mail, Calendar, Users, Clock, Bell, Globe, Shield, ChevronRight, Building2, GraduationCap } from 'lucide-react';
 import { useApp } from '../AppContext';
 import { Topbar } from '../components/Topbar';
 import { Badge } from '../components/ui';
@@ -8,7 +8,7 @@ import { supabase } from '../lib/supabase';
 
 export function Settings() {
   const { student } = useApp();
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, isTrainee } = useAuth();
   const [name, setName] = useState(profile?.full_name ?? '');
   const [saved, setSaved] = useState(false);
   const saveName = async () => {
@@ -35,6 +35,7 @@ export function Settings() {
             </div>
           </div>
 
+          {isTrainee ? <TraineeDetailsForm /> : (
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="p-3 rounded-lg bg-bg-base border border-line-subtle">
               <div className="flex items-center gap-2 text-xs text-muted-500 mb-1"><User className="w-4 h-4" /> Full Name</div>
@@ -47,6 +48,7 @@ export function Settings() {
             <SettingField icon={<Calendar className="w-4 h-4" />} label="Joined" value={student.joinedDate} />
             <SettingField icon={<Clock className="w-4 h-4" />} label="Training Hours" value={`${student.totalTrainingHours}h`} />
           </div>
+          )}
         </div>
 
         {/* Notifications */}
@@ -127,6 +129,48 @@ export function Settings() {
             <SettingsLink label="Data & Privacy" detail="Manage your training data" />
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Trainees (no email account) edit the details they entered on the start screen. */
+function TraineeDetailsForm() {
+  const { profile, refreshProfile } = useAuth();
+  const [d, setD] = useState({
+    first: profile?.first_name ?? '', last: profile?.last_name ?? '',
+    agency: profile?.agency_name ?? '', trainer: profile?.trainer_name ?? '',
+  });
+  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const complete = d.first.trim() && d.last.trim() && d.agency.trim() && d.trainer.trim();
+  const save = async () => {
+    setStatus('saving');
+    const { error } = await supabase.rpc('update_trainee_details', {
+      p_first_name: d.first, p_last_name: d.last, p_agency_name: d.agency, p_trainer_name: d.trainer,
+    });
+    if (error) { setStatus('error'); return; }
+    await refreshProfile();
+    setStatus('saved'); setTimeout(() => setStatus('idle'), 2000);
+  };
+  const field = (key: keyof typeof d, label: string, icon: React.ReactNode) => (
+    <label className="p-3 rounded-lg bg-bg-base border border-line-subtle block">
+      <div className="flex items-center gap-2 text-xs text-muted-500 mb-1">{icon} {label}</div>
+      <input value={d[key]} onChange={(e) => setD({ ...d, [key]: e.target.value })} className="input text-sm py-1.5" />
+    </label>
+  );
+  return (
+    <div className="space-y-3">
+      <div className="grid sm:grid-cols-2 gap-4">
+        {field('first', 'First name', <User className="w-4 h-4" />)}
+        {field('last', 'Last name', <User className="w-4 h-4" />)}
+        {field('agency', 'Insurance agency', <Building2 className="w-4 h-4" />)}
+        {field('trainer', 'Trainer', <GraduationCap className="w-4 h-4" />)}
+      </div>
+      <div className="flex items-center gap-3">
+        <button onClick={save} disabled={!complete || status === 'saving'} className="btn-secondary text-xs py-1.5">
+          {status === 'saved' ? 'Saved' : status === 'saving' ? 'Saving…' : 'Save details'}
+        </button>
+        {status === 'error' && <span className="text-xs text-lava-300">Could not save. Please try again.</span>}
       </div>
     </div>
   );

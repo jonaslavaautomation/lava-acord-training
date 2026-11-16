@@ -10,10 +10,19 @@ interface AuthState {
   isStaff: boolean;
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ needsConfirmation: boolean }>;
+  /** True for trainees who started with their name only (Supabase anonymous session). */
+  isTrainee: boolean;
+  startTraining: (details: TraineeDetails) => Promise<void>;
   sendPasswordReset: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+}
+
+export interface TraineeDetails {
+  firstName: string;
+  lastName: string;
+  agencyName: string;
+  trainerName: string;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -55,12 +64,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw new Error(error.message);
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, fullName: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email, password, options: { data: { full_name: fullName }, emailRedirectTo: window.location.origin },
+  const startTraining = useCallback(async (d: TraineeDetails) => {
+    const clean = (v: string) => v.trim().replace(/\s+/g, ' ');
+    const { error } = await supabase.auth.signInAnonymously({
+      options: {
+        data: {
+          first_name: clean(d.firstName), last_name: clean(d.lastName),
+          agency_name: clean(d.agencyName), trainer_name: clean(d.trainerName),
+          full_name: `${clean(d.firstName)} ${clean(d.lastName)}`,
+        },
+      },
     });
-    if (error) throw new Error(error.message);
-    return { needsConfirmation: !data.session };
+    if (error) {
+      if (/anonymous/i.test(error.message)) {
+        throw new Error('Trainee access is not switched on yet. Please ask your administrator to enable anonymous sign-ins in Supabase.');
+      }
+      throw new Error(error.message);
+    }
   }, []);
 
   const sendPasswordReset = useCallback(async (email: string) => {
@@ -77,9 +97,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isStaff = profile?.role === 'trainer' || profile?.role === 'admin';
   const isAdmin = profile?.role === 'admin';
+  const isTrainee = !!session?.user.is_anonymous;
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, isStaff, isAdmin, signIn, signUp, sendPasswordReset, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ session, profile, loading, isStaff, isAdmin, isTrainee, signIn, startTraining, sendPasswordReset, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

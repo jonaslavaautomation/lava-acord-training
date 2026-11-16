@@ -43,7 +43,7 @@ function emptyStudent(profile: Profile | null): StudentRecord {
     role: profile?.role === 'admin' ? 'Administrator' : profile?.role === 'trainer' ? 'Trainer' : 'Virtual Assistant — Trainee',
     email: profile?.email ?? '',
     avatarInitials: name.slice(0, 2).toUpperCase(),
-    cohort: profile?.cohort ?? 'No cohort assigned',
+    cohort: profile?.cohort ?? profile?.agency_name ?? 'No cohort assigned',
     joinedDate: profile ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
     totalTrainingHours: 0,
     progress: Object.fromEntries(MODULE_IDS.map((id) => [id, buildModuleProgress(id, [], [], [])])) as StudentRecord['progress'],

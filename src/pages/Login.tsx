@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle2, Loader2, Lock, Mail, User } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, Lock, Mail } from 'lucide-react';
 import { BrandLockup } from '../components/BrandLockup';
 import { useAuth } from '../context/AuthContext';
 
-type Mode = 'signin' | 'signup' | 'reset';
+type Mode = 'signin' | 'reset';
 
+/** Administrator / trainer sign-in. Only reachable at /admin; trainees use the start screen. */
 export function Login() {
-  const { signIn, signUp, sendPasswordReset } = useAuth();
+  const { signIn, sendPasswordReset } = useAuth();
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -21,13 +21,6 @@ export function Login() {
     try {
       if (mode === 'signin') {
         await signIn(email.trim(), password);
-      } else if (mode === 'signup') {
-        if (password.length < 8) throw new Error('Use at least 8 characters for your password.');
-        const { needsConfirmation } = await signUp(email.trim(), password, fullName.trim());
-        if (needsConfirmation) {
-          setInfo('Check your email to confirm your account, then sign in.');
-          setMode('signin');
-        }
       } else {
         await sendPasswordReset(email.trim());
         setInfo('If an account exists for that email, a password reset link has been sent.');
@@ -51,25 +44,17 @@ export function Login() {
         <form onSubmit={submit} className="card p-7 space-y-4">
           <div>
             <h1 className="text-xl font-semibold text-white tracking-tight">
-              {mode === 'signin' ? 'Sign in' : mode === 'signup' ? 'Create your account' : 'Reset your password'}
+              {mode === 'signin' ? 'Administrator sign in' : 'Reset your password'}
             </h1>
-            <p className="text-sm text-muted-400 mt-1">
-              {mode === 'signup' ? 'New accounts start as trainees. An administrator can grant trainer access.' : 'Students, trainers and administrators sign in here.'}
-            </p>
+            <p className="text-sm text-muted-400 mt-1">For administrators and trainers only.</p>
           </div>
 
-          {mode === 'signup' && (
-            <Field icon={<User className="w-4 h-4" />} label="Full name">
-              <input value={fullName} onChange={(e) => setFullName(e.target.value)} required className="input pl-9" placeholder="Alex Rivera" autoComplete="name" />
-            </Field>
-          )}
           <Field icon={<Mail className="w-4 h-4" />} label="Email">
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="input pl-9" placeholder="you@agency.com" autoComplete="email" />
           </Field>
-          {mode !== 'reset' && (
+          {mode === 'signin' && (
             <Field icon={<Lock className="w-4 h-4" />} label="Password">
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input pl-9" placeholder="••••••••"
-                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} minLength={mode === 'signup' ? 8 : undefined} />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input pl-9" placeholder="••••••••" autoComplete="current-password" />
             </Field>
           )}
 
@@ -78,15 +63,12 @@ export function Login() {
 
           <button type="submit" disabled={busy} className="btn-primary w-full py-3">
             {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-            {mode === 'signin' ? 'Sign in' : mode === 'signup' ? 'Create account' : 'Send reset link'}
+            {mode === 'signin' ? 'Sign in' : 'Send reset link'}
           </button>
 
-          <div className="flex items-center justify-between text-xs pt-1">
+          <div className="flex items-center justify-end text-xs pt-1">
             {mode === 'signin' ? (
-              <>
-                <button type="button" onClick={() => { setMode('signup'); setError(null); }} className="text-lava-400 hover:text-lava-300">Create an account</button>
-                <button type="button" onClick={() => { setMode('reset'); setError(null); }} className="text-muted-400 hover:text-white">Forgot password?</button>
-              </>
+              <button type="button" onClick={() => { setMode('reset'); setError(null); }} className="text-muted-400 hover:text-white">Forgot password?</button>
             ) : (
               <button type="button" onClick={() => { setMode('signin'); setError(null); }} className="text-muted-400 hover:text-white">← Back to sign in</button>
             )}

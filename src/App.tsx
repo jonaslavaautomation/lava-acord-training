@@ -15,10 +15,15 @@ import { TrainerDashboard } from './pages/TrainerDashboard';
 import { TrainingMaterials } from './pages/TrainingMaterials';
 import { UserManagement } from './pages/UserManagement';
 import { Login } from './pages/Login';
+import { ChatAssistant } from './components/ChatAssistant';
+import { TraineeStart } from './pages/TraineeStart';
+
+/** The email/password login is only shown at /admin; everyone else gets the trainee start screen. */
+const isAdminPath = () => /^\/admin\/?$/i.test(window.location.pathname) || window.location.hash === '#admin';
 
 function AppContent() {
   const { view, mode } = useApp();
-  const { isStaff } = useAuth();
+  const { isStaff, isAdmin } = useAuth();
 
   let page;
   switch (view) {
@@ -66,6 +71,8 @@ function AppContent() {
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 min-w-0">{page}</div>
+      {/* ACORD Assistant: administrator only for now (the server enforces this too, see api/chat.ts CHAT_ACCESS). */}
+      {isAdmin && <ChatAssistant />}
     </div>
   );
 }
@@ -75,7 +82,7 @@ function AuthGate() {
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 text-lava-400 animate-spin" /></div>;
   }
-  if (!session) return <Login />;
+  if (!session) return isAdminPath() ? <Login /> : <TraineeStart />;
   if (!profile) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">

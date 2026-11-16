@@ -69,6 +69,8 @@ export function useTrainerData(): TrainerData {
           name,
           avatarInitials: name.split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase()).join(''),
           cohort: s.cohort ?? '—',
+          agency: s.agency_name ?? null,
+          trainer: s.trainer_name ?? null,
           modulesCompleted: completed,
           modulesInProgress: inProgress,
           averageScore: avg,

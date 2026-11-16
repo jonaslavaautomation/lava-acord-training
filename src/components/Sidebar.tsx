@@ -40,7 +40,11 @@ const trainerNav: NavEntry[] = [
 
 export function Sidebar() {
   const { view, navigate, mode, setMode, student } = useApp();
-  const { isStaff, signOut } = useAuth();
+  const { isStaff, isTrainee, signOut } = useAuth();
+  const exit = () => {
+    if (isTrainee && !confirm('Exit training?\n\nYou have no password, so after exiting you will start over as a new trainee. To keep your progress, just close the tab instead and come back on this same browser.')) return;
+    signOut();
+  };
   const nav = mode === 'trainer' ? trainerNav : studentNav;
   const isActive = (id: View) => view === id || (id === 'training' && (view === 'module' || view === 'assessment' || view === 'results'));
 
@@ -108,9 +112,9 @@ export function Sidebar() {
             <div className="text-xs text-muted-500 truncate">{student.role}</div>
           </div>
         </button>
-        <button onClick={signOut} className="nav-item w-full text-muted-500">
+        <button onClick={exit} className="nav-item w-full text-muted-500">
           <LogOut className="w-[18px] h-[18px]" strokeWidth={2} />
-          <span className="flex-1 text-left">Sign out</span>
+          <span className="flex-1 text-left">{isTrainee ? 'Exit training' : 'Sign out'}</span>
         </button>
       </div>
     </aside>

@@ -106,6 +106,10 @@ export interface Profile {
   role: AppRole;
   cohort: string | null;
   created_at: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  agency_name?: string | null;
+  trainer_name?: string | null;
 }
 
 export interface StudentRecord {
@@ -124,6 +128,8 @@ export interface TrainerStudent {
   name: string;
   avatarInitials: string;
   cohort: string;
+  agency: string | null;
+  trainer: string | null;
   modulesCompleted: number;
   modulesInProgress: number;
   averageScore: number | null;

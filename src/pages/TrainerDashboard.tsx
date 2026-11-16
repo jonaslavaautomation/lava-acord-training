@@ -35,7 +35,7 @@ export function TrainerDashboard() {
   const filteredStudents = TRAINER_STUDENTS.filter((s) => {
     if (filter === 'attention' && !s.needsAttention) return false;
     if (filter === 'completed' && s.status !== 'completed') return false;
-    if (search && !s.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (search && ![s.name, s.agency, s.trainer, s.cohort].join(' ').toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
@@ -113,7 +113,7 @@ export function TrainerDashboard() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search students by name..."
+                placeholder="Search by name, agency or trainer..."
                 className="bg-transparent text-sm text-slate-200 placeholder:text-muted-600 focus:outline-none flex-1"
               />
             </div>
@@ -135,7 +135,8 @@ export function TrainerDashboard() {
                       {s.status === 'idle' && <Badge variant="default">Idle</Badge>}
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted-500">
-                      <span>{s.cohort}</span>
+                      <span>{s.agency ?? s.cohort}</span>
+                      {s.trainer && <span>Trainer: {s.trainer}</span>}
                       <span className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> {s.modulesCompleted}/{ACORD_MODULES.length} done</span>
                       <span className="flex items-center gap-1"><Clock3 className="w-3 h-3" /> {s.lastActive}</span>
                     </div>

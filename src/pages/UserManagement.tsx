@@ -35,11 +35,11 @@ export function UserManagement() {
     run(`reset-${id}-${moduleId}`, async () => supabase.rpc('staff_reset_attempts', { p_user_id: id, p_module_id: moduleId }));
   };
 
-  const shown = profiles.filter((p) => !query || `${p.full_name} ${p.email}`.toLowerCase().includes(query.toLowerCase()));
+  const shown = profiles.filter((p) => !query || `${p.full_name} ${p.email ?? ''} ${p.agency_name ?? ''} ${p.trainer_name ?? ''}`.toLowerCase().includes(query.toLowerCase()));
 
   return (
     <div>
-      <Topbar title="Users & Roles" subtitle="Manage student, trainer and administrator accounts" />
+      <Topbar title="Users & Roles" subtitle="Trainees, trainers and administrators" />
       <div className="px-8 py-6 space-y-5 max-w-[1200px]">
         <div className="card p-4 flex items-start gap-3 border-cyan-500/15 bg-cyan-500/5">
           <Shield className="w-5 h-5 text-cyan-400 mt-0.5 shrink-0" />
@@ -56,7 +56,7 @@ export function UserManagement() {
 
         <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-bg-surface border border-line-subtle">
           <Search className="w-4 h-4 text-muted-500" />
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name or email..." className="bg-transparent text-sm text-slate-200 placeholder:text-muted-600 focus:outline-none flex-1" />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name, email, agency or trainer..." className="bg-transparent text-sm text-slate-200 placeholder:text-muted-600 focus:outline-none flex-1" />
         </div>
 
         <div className="card divide-y divide-line-subtle">
@@ -72,7 +72,9 @@ export function UserManagement() {
                   </div>
                   <div className="flex-1 min-w-[200px]">
                     <div className="text-sm font-medium text-white">{name} {p.id === me?.id && <span className="text-xs text-muted-500">(you)</span>}</div>
-                    <div className="text-xs text-muted-500">{p.email} · joined {new Date(p.created_at).toLocaleDateString()}</div>
+                    <div className="text-xs text-muted-500">
+                      {p.email ?? [p.agency_name, p.trainer_name && `Trainer: ${p.trainer_name}`].filter(Boolean).join(' · ')} · joined {new Date(p.created_at).toLocaleDateString()}
+                    </div>
                   </div>
                   <input defaultValue={p.cohort ?? ''} placeholder="Cohort, e.g. 2026-Q4" onBlur={(e) => e.target.value !== (p.cohort ?? '') && setCohort(p.id, e.target.value)}
                     className="input text-xs py-1.5 w-40" />
