@@ -49,7 +49,11 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
 ## ACORD Assistant (`api/chat.ts`)
 Claude `claude-opus-5-5` with the video transcripts in a cached system prompt. Admin-only by default (enforced on the server and hidden in the UI).
 It coaches instead of giving quiz or assessment answers, and it must never receive answer keys or the assessment scenarios.
-On the owner's PC, `CHAT_ENGINE=claude-code` in `.env` makes it answer through the locally installed Claude Code CLI
-(`api/_claude-code.ts`, the owner's own Claude plan, no API key). That mode is always admin-only and never runs on Vercel.
+The owner has no API key (company Claude plan), so the live site's chatbot reaches **Claude Code on the owner's PC**:
+`scripts/assistant-bridge.mjs` listens on `127.0.0.1:5174`, only accepts the LAVA site's origin, and reuses `api/chat.ts`
+with `CHAT_ENGINE=claude-code` (`api/_claude-code.ts` runs the `claude` CLI with no tools except reading attached photos).
+`ChatAssistant.tsx` tries the site's own `/api/chat` first, then the bridge. It is always admin-only and only works on that PC.
+Start it with `Start ACORD Assistant.bat`; `scripts/turn-on-autostart.bat` adds it to Windows startup (the owner's choice).
+Never give this path tool access (files, shell): web requests must not be able to run commands on the PC.
 
 `DEVELOPMENT_SUMMARY.md` is an older build log: where it disagrees with this file, this file is current.

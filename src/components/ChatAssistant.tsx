@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabase';
 interface ChatImage { media_type: string; data: string; preview: string }
 interface ChatMessage { role: 'user' | 'assistant'; text: string; images?: ChatImage[] }
 
+/** The ACORD Assistant bridge on the owner's PC (scripts/assistant-bridge.mjs). Only reachable from that PC. */
+const BRIDGE_URL = 'http://127.0.0.1:5174';
 const MAX_IMAGES_PER_MESSAGE = 4;
 const MAX_IMAGES_SENT = 4;      // across the conversation, newest first
 const MAX_EDGE = 1568;          // Claude's recommended max image edge
@@ -104,16 +106,34 @@ export function ChatAssistant() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // null = still checking; false = this copy of the app can't answer (e.g. live site without an API key).
+  // Where answers come from: this website's own /api/chat (API key), or the ACORD Assistant bridge running on
+  // this PC (Claude Code with the owner's Claude account, scripts/assistant-bridge.mjs).
+  // null = still checking; false = neither is available.
   const [ready, setReady] = useState<boolean | null>(null);
+  const [apiBase, setApiBase] = useState('');
   useEffect(() => {
     if (!open || ready !== null) return;
-    fetch('/api/chat', { method: 'GET' })
-      .then((r) => (r.ok ? r.json() : { ready: false }))
-      .then((d: { ready?: boolean }) => setReady(!!d.ready))
-      .catch(() => setReady(false));
+    let cancelled = false;
+    const probe = async (base: string) => {
+      try {
+        const r = await fetch(`${base}/api/chat`, { method: 'GET', signal: AbortSignal.timeout(3000) });
+        return r.ok && !!((await r.json()) as { ready?: boolean }).ready;
+      } catch {
+        return false;
+      }
+    };
+    (async () => {
+      let base: string | null = null;
+      if (await probe('')) base = '';
+      else if (await probe(BRIDGE_URL)) base = BRIDGE_URL;
+      if (cancelled) return;
+      setApiBase(base ?? '');
+      setReady(base !== null);
+    })();
+    return () => { cancelled = true; };
   }, [open, ready]);
   const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  const viaPc = apiBase === BRIDGE_URL;
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [messages, open]);
   useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
@@ -144,7 +164,7 @@ export function ChatAssistant() {
     const update = (t: string) => setMessages((m) => [...m.slice(0, -1), { role: 'assistant', text: t }]);
     try {
       const { data } = await supabase.auth.getSession();
-      const res = await fetch('/api/chat', {
+      const res = await fetch(`${apiBase}/api/chat`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', authorization: `Bearer ${data.session?.access_token ?? ''}` },
         body: JSON.stringify({ messages: toPayload(history) }),
@@ -193,7 +213,9 @@ export function ChatAssistant() {
         <div className="w-8 h-8 rounded-full bg-lava-600/20 flex items-center justify-center"><Bot className="w-4 h-4 text-lava-400" /></div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold text-white">ACORD Assistant</div>
-          <div className="text-[11px] text-muted-500">Ask about ACORD 125, 126, 127, 130, 140</div>
+          <div className="text-[11px] text-muted-500">
+            {ready === null ? 'Connecting…' : viaPc ? 'Ask about ACORD forms · via Claude Code on your PC' : 'Ask about ACORD 125, 126, 127, 130, 140'}
+          </div>
         </div>
         {messages.length > 0 && (
           <button onClick={() => { setMessages([]); setError(null); }} disabled={busy} title="New conversation" className="p-1.5 rounded-md text-muted-400 hover:text-white hover:bg-bg-hover"><RotateCcw className="w-4 h-4" /></button>
@@ -211,14 +233,15 @@ export function ChatAssistant() {
             </>
           ) : (
             <>
-              <p className="text-white font-medium">The assistant runs on your PC, using your Claude account.</p>
-              <p>This live website has no Claude API key, so it can't answer here. Open the app on your PC instead:</p>
+              <p className="text-white font-medium">Can't reach the assistant on your PC.</p>
+              <p>The assistant answers through Claude Code on your computer. It starts by itself when you sign in to Windows. If it isn't running:</p>
               <ol className="list-decimal pl-5 space-y-1">
                 <li>Double-click <span className="text-slate-200">Start ACORD Assistant</span> on your desktop.</li>
-                <li>Wait for the browser to open, then sign in and ask your question there.</li>
+                <li>If your browser asks to let this site <span className="text-slate-200">access apps on this device</span>, click <span className="text-slate-200">Allow</span>.</li>
+                <li>Click <span className="text-slate-200">Try again</span>.</li>
               </ol>
-              <a href="http://localhost:5173/admin" className="btn-primary w-full py-2.5 text-center">Already started? Open it on my PC</a>
-              <p className="text-[11px] text-muted-500">To use the assistant on the live website (for example for trainees later), add an Anthropic API key in Vercel.</p>
+              <button onClick={() => setReady(null)} className="btn-primary w-full py-2.5">Try again</button>
+              <p className="text-[11px] text-muted-500">It only works on the computer where Claude Code is installed and signed in.</p>
             </>
           )}
         </div>
