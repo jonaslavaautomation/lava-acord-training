@@ -67,7 +67,7 @@ export async function POST(request: Request): Promise<Response> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-  if (!apiKey || !supabaseUrl || !supabaseKey) return json(503, 'The ACORD Assistant is not set up yet. Add ANTHROPIC_API_KEY to the .env file (on your PC) or to Vercel's environment variables.');
+  if (!apiKey || !supabaseUrl || !supabaseKey) return json(503, 'The ACORD Assistant is not set up yet. Add ANTHROPIC_API_KEY to the .env file (on your PC) or to the Vercel environment variables.');
 
   // Only signed-in users of the app.
   const token = (request.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
