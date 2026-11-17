@@ -96,10 +96,14 @@ ALTER TABLE lava_private.answer_key_rules ADD CONSTRAINT answer_key_rules_field_
 REVOKE ALL ON lava_private.answer_key_rules FROM PUBLIC, anon, authenticated;
 
 DELETE FROM lava_private.answer_key_rules;
+-- Rules for a form that isn't in acord_modules yet (e.g. a newly added ACORD form whose migration hasn't been run)
+-- are skipped; run this file again after adding the form.
 INSERT INTO lava_private.answer_key_rules
   (module_id, rule_key, label, name_rx, tip_rx, nth, field_kind, expected_value, match_type, points, required, missing_rule, feedback_hint, sort_order)
-VALUES
-${values};
+SELECT v.* FROM (VALUES
+${values}
+) AS v(module_id, rule_key, label, name_rx, tip_rx, nth, field_kind, expected_value, match_type, points, required, missing_rule, feedback_hint, sort_order)
+WHERE EXISTS (SELECT 1 FROM public.acord_modules m WHERE m.id = v.module_id);
 
 CREATE OR REPLACE FUNCTION public.auto_configure_answer_key(p_material_id uuid, p_overwrite boolean DEFAULT false)
 RETURNS jsonb

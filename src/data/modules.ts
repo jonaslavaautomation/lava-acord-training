@@ -345,7 +345,74 @@ Karen`,
   },
 };
 
-export const ACORD_MODULES: AcordModule[] = [MODULE_125, MODULE_126, MODULE_127, MODULE_130, MODULE_140];
+export const MODULE_27: AcordModule = {
+  id: '27',
+  formNumber: 'ACORD 27',
+  title: 'Evidence of Property Insurance',
+  description: 'Proves to a lender or other interested party that property coverage is in force on a building or contents.',
+  category: 'Property',
+  videoTitle: 'ACORD 27 — Evidence of Property Insurance',
+  videoDescription: 'Issue evidence of property coverage to a mortgagee or lender with the correct policy, property, and interest details.',
+  videoDuration: '—',
+  introduction: {
+    purpose: 'The ACORD 27 (Evidence of Property Insurance) shows a mortgagee, lender, or other interested party that a property policy is in force. It summarizes the insurer, policy number, policy period, the insured property, the coverages and limits, and names the interested party. It does not change the policy; it is evidence only.',
+    agencyRole: 'Account managers and VAs issue the ACORD 27 when a bank or lender asks for proof of insurance, usually for a mortgage or loan. The details must match the policy exactly: wrong limits, a wrong loan number, or a missing mortgagee checkbox can delay a closing or trigger force-placed insurance by the lender.',
+    keySections: [
+      { title: 'Agency, Company & Policy', description: 'Producer, insurer, policy number, effective and expiration dates.' },
+      { title: 'Named Insured & Property', description: 'Insured name and mailing address; location and description of the insured property.' },
+      { title: 'Coverage Information', description: 'Causes of loss (basic, broad, special), coverages, limits, and deductibles.' },
+      { title: 'Additional Interest', description: 'Lender name and address, loan number, and interest type (mortgagee, lender’s loss payable, loss payee).' },
+    ],
+    learningObjectives: [
+      'Copy the insurer, policy number, and policy period exactly as they appear on the policy.',
+      'Describe the insured property and its location.',
+      'List each coverage with its limit and deductible, and the causes of loss form.',
+      'Enter the lender as the additional interest with the correct loan number and interest type (mortgagee).',
+      'Know that the ACORD 27 is evidence only and does not change or add coverage.',
+    ],
+  },
+  scenario: {
+    from: 'karen.delgado@pinnaclesurety.com',
+    fromName: 'Karen Delgado, Account Executive',
+    to: 'va-team@lavaagency.com',
+    subject: 'Evidence of Property needed — BlueRidge Manufacturing / First Carolina Bank',
+    date: 'Nov 14, 2026 — 10:05 AM',
+    body: `Hi team,
+
+BlueRidge Manufacturing is refinancing their building, and the bank needs evidence of property insurance before closing on Friday. Policy details:
+
+INSURED
+BlueRidge Manufacturing, Inc.
+1500 Industrial Park Lane, Asheville, NC 28806
+
+POLICY
+Insurer: Pinnacle Mutual Insurance Company (NAIC 23787)
+Policy number: CPP-4471209
+Policy period: 09/01/2026 to 09/01/2027
+
+PROPERTY
+Location: 1500 Industrial Park Lane, Asheville, NC 28806
+Description: One-story, 28,000 sq ft joisted masonry manufacturing building
+
+COVERAGE
+Causes of loss: Special form
+Building: $2,850,000, replacement cost, $2,500 deductible
+Business personal property: $1,650,000, replacement cost, $2,500 deductible
+Business income: actual loss sustained, 12 months
+
+LENDER (additional interest)
+First Carolina Bank, ISAOA/ATIMA
+PO Box 7740, Charlotte, NC 28241
+Loan number: 88-301557
+Interest: Mortgagee
+
+Please prepare the ACORD 27 for the bank.
+
+Karen`,
+  },
+};
+
+export const ACORD_MODULES: AcordModule[] = [MODULE_125, MODULE_126, MODULE_127, MODULE_130, MODULE_140, MODULE_27];
 
 export const MODULE_MAP: Record<AcordId, AcordModule> = Object.fromEntries(
   ACORD_MODULES.map((m) => [m.id, m]),

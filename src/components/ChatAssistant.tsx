@@ -216,7 +216,7 @@ export function ChatAssistant() {
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold text-white">ACORD Assistant</div>
           <div className="text-[11px] text-muted-500">
-            {ready === null ? 'Connecting…' : viaPc ? 'Ask about ACORD forms · via Claude Code on your PC' : 'Ask about ACORD 125, 126, 127, 130, 140'}
+            {ready === null ? 'Connecting…' : viaPc ? 'Ask about ACORD forms · via Claude Code on your PC' : 'Ask about ACORD 125, 126, 127, 130, 140, 27'}
           </div>
         </div>
         {messages.length > 0 && (

@@ -3,7 +3,7 @@ import { supabase } from './supabase';
 import { MAX_ATTEMPTS, PASS_SCORE } from './assessmentService';
 import type { AcordId, AttemptRow, Profile, TrainerActivity, TrainerStudent } from '@/types';
 
-const MODULES: AcordId[] = ['125', '126', '127', '130', '140'];
+const MODULES: AcordId[] = ['125', '126', '127', '130', '140', '27'];
 
 export function relativeTime(iso: string | null): string {
   if (!iso) return 'Never';

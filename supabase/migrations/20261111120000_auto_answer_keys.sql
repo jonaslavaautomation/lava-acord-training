@@ -34,9 +34,29 @@ ALTER TABLE lava_private.answer_key_rules ADD CONSTRAINT answer_key_rules_field_
 REVOKE ALL ON lava_private.answer_key_rules FROM PUBLIC, anon, authenticated;
 
 DELETE FROM lava_private.answer_key_rules;
+-- Rules for a form that isn't in acord_modules yet (e.g. a newly added ACORD form whose migration hasn't been run)
+-- are skipped; run this file again after adding the form.
 INSERT INTO lava_private.answer_key_rules
   (module_id, rule_key, label, name_rx, tip_rx, nth, field_kind, expected_value, match_type, points, required, missing_rule, feedback_hint, sort_order)
-VALUES
+SELECT v.* FROM (VALUES
+  ('27', 'insurer', 'Company (insurer)', '(^|\.)(Insurer|Company)_FullName_A$', NULL, 1, 'text', 'Pinnacle Mutual', 'contains', 4, true, 'penalize', NULL, 1),
+  ('27', 'naic', 'Insurer NAIC code', '(^|\.)Insurer_NAICCode_A$', 'naic', 1, 'text', '23787', 'exact', 2, false, 'penalize', NULL, 2),
+  ('27', 'policy_no', 'Policy number', '(^|\.)Policy_PolicyNumberIdentifier_A$', 'policy number', 1, 'text', 'CPP-4471209|CPP4471209', 'any-of', 6, true, 'penalize', 'Copy the policy number exactly as it appears on the policy.', 3),
+  ('27', 'eff', 'Policy effective date', '(^|\.)Policy_EffectiveDate_A$', 'effective date', 1, 'text', '09/01/2026', 'exact', 3, true, 'penalize', 'Dates use MM/DD/YYYY.', 4),
+  ('27', 'exp', 'Policy expiration date', '(^|\.)Policy_ExpirationDate_A$', 'expiration date', 1, 'text', '09/01/2027', 'exact', 3, true, 'penalize', 'Dates use MM/DD/YYYY.', 5),
+  ('27', 'ni_name', 'Named insured', '(^|\.)NamedInsured_FullName_A$', 'named insured', 1, 'text', 'BlueRidge Manufacturing', 'contains', 5, true, 'penalize', NULL, 6),
+  ('27', 'ni_addr', 'Named insured — street', '(^|\.)NamedInsured_MailingAddress_LineOne_A$', NULL, 1, 'text', '1500 Industrial Park', 'contains', 2, false, 'penalize', NULL, 7),
+  ('27', 'ni_city', 'Named insured — city', '(^|\.)NamedInsured_MailingAddress_CityName_A$', NULL, 1, 'text', 'Asheville', 'exact', 1, false, 'penalize', NULL, 8),
+  ('27', 'ni_state', 'Named insured — state', '(^|\.)NamedInsured_MailingAddress_StateOrProvinceCode_A$', NULL, 1, 'text', 'NC|North Carolina', 'any-of', 1, false, 'penalize', NULL, 9),
+  ('27', 'ni_zip', 'Named insured — ZIP', '(^|\.)NamedInsured_MailingAddress_PostalCode_A$', NULL, 1, 'text', '28806', 'contains', 1, false, 'penalize', NULL, 10),
+  ('27', 'location', 'Property location / description', '(^|\.)(CommercialStructure_PhysicalAddress_LineOne|Property_LocationDescription|CommercialStructure_LocationDescription)_A$', 'location.*description|description of (the )?property', 1, 'text', '1500 Industrial Park', 'contains', 4, true, 'penalize', NULL, 11),
+  ('27', 'special', 'Causes of loss — Special', '(^|\.)(CommercialProperty_CauseOfLoss_SpecialIndicator|Property_CausesOfLoss_SpecialIndicator)_A$', NULL, 1, 'checkbox', 'true', 'exact', 3, false, 'penalize', 'The policy is written on the Special causes of loss form.', 12),
+  ('27', 'ai_name', 'Additional interest — lender name', '(^|\.)AdditionalInterest_FullName_A$', 'additional interest.*name', 1, 'text', 'First Carolina Bank', 'contains', 5, true, 'penalize', NULL, 13),
+  ('27', 'ai_addr', 'Additional interest — address', '(^|\.)AdditionalInterest_MailingAddress_LineOne_A$', NULL, 1, 'text', 'PO Box 7740|P.O. Box 7740|P O Box 7740|Box 7740', 'contains', 2, false, 'penalize', NULL, 14),
+  ('27', 'ai_city', 'Additional interest — city', '(^|\.)AdditionalInterest_MailingAddress_CityName_A$', NULL, 1, 'text', 'Charlotte', 'exact', 1, false, 'penalize', NULL, 15),
+  ('27', 'ai_zip', 'Additional interest — ZIP', '(^|\.)AdditionalInterest_MailingAddress_PostalCode_A$', NULL, 1, 'text', '28241', 'contains', 1, false, 'penalize', NULL, 16),
+  ('27', 'loan_no', 'Loan number', '(^|\.)(AdditionalInterest_AccountNumberIdentifier|AdditionalInterest_LoanNumberIdentifier)_A$', 'loan', 1, 'text', '88-301557|88301557', 'any-of', 6, true, 'penalize', 'The bank needs the loan number exactly as given.', 17),
+  ('27', 'mortgagee', 'Interest — Mortgagee', '(^|\.)AdditionalInterest_Interest_MortgageeIndicator_A$', 'mortgagee', 1, 'checkbox', 'true', 'exact', 4, true, 'penalize', 'The bank is the mortgagee on this building.', 18),
   ('125', 'ni_name', 'Named Insured — legal name', '(^|\.)NamedInsured_FullName_A$', NULL, 1, 'text', 'Riverstone Construction Co., LLC', 'contains', 6, true, 'penalize', NULL, 1),
   ('125', 'ni_addr1', 'Mailing address — street', '(^|\.)NamedInsured_MailingAddress_LineOne_A$', NULL, 1, 'text', '4820 Industrial Parkway|4820 Industrial Pkwy', 'contains', 4, true, 'penalize', NULL, 2),
   ('125', 'ni_addr2', 'Mailing address — suite', '(^|\.)NamedInsured_MailingAddress_LineTwo_A$', NULL, 1, 'text', '220', 'contains', 2, false, 'optional', 'Suite 220 may go on line one or line two.', 3),
@@ -226,7 +246,9 @@ VALUES
   ('140', 'wiring', 'Wiring update', '(^|\.)BuildingImprovement_WiringIndicator_A$', NULL, 1, 'checkbox', 'true', 'exact', 1, false, 'penalize', NULL, 24),
   ('140', 'wiring_yr', 'Wiring update year', '(^|\.)BuildingImprovement_WiringYear_A$', NULL, 1, 'text', '2020', 'exact', 2, false, 'penalize', NULL, 25),
   ('140', 'roofing', 'Roof update', '(^|\.)BuildingImprovement_RoofingIndicator_A$', NULL, 1, 'checkbox', 'true', 'exact', 1, false, 'penalize', NULL, 26),
-  ('140', 'roofing_yr', 'Roof update year', '(^|\.)BuildingImprovement_RoofingYear_A$', NULL, 1, 'text', '2021', 'exact', 2, false, 'penalize', NULL, 27);
+  ('140', 'roofing_yr', 'Roof update year', '(^|\.)BuildingImprovement_RoofingYear_A$', NULL, 1, 'text', '2021', 'exact', 2, false, 'penalize', NULL, 27)
+) AS v(module_id, rule_key, label, name_rx, tip_rx, nth, field_kind, expected_value, match_type, points, required, missing_rule, feedback_hint, sort_order)
+WHERE EXISTS (SELECT 1 FROM public.acord_modules m WHERE m.id = v.module_id);
 
 CREATE OR REPLACE FUNCTION public.auto_configure_answer_key(p_material_id uuid, p_overwrite boolean DEFAULT false)
 RETURNS jsonb

@@ -12,7 +12,7 @@ import type {
 
 export const MAX_ATTEMPTS = 3;
 export const PASS_SCORE = 80;
-const MODULE_IDS: AcordId[] = ['125', '126', '127', '130', '140'];
+const MODULE_IDS: AcordId[] = ['125', '126', '127', '130', '140', '27'];
 
 const ERROR_MESSAGES: Record<string, string> = {
   NOT_AUTHENTICATED: 'Your session has expired. Please sign in again.',

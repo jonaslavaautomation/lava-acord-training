@@ -1,6 +1,6 @@
 # LAVA ACORD Training Simulator
 
-Training app for virtual assistants (VAs) who fill out commercial insurance ACORD forms (125, 126, 127, 130, 140).
+Training app for virtual assistants (VAs) who fill out commercial insurance ACORD forms (125, 126, 127, 130, 140, 27).
 For each form a trainee watches the training video, passes a 15-question Knowledge Check (80%), then fills out the real
 fillable ACORD PDF for a scenario, and the server grades it (pass 80%, max 3 attempts).
 
@@ -42,6 +42,12 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
   Use the transcripts, not general insurance knowledge.
 
 ## Content notes
+- ACORD 27 (Evidence of Property Insurance) was added before its video and fillable PDF existed. Its answer-key rules in
+  `rules.mjs` are provisional (standard ACORD field names): verify them with `--check` once the PDF is available. When the
+  video arrives, transcribe it to `transcripts/acord-27.txt`, write 15 video-based questions in `questions.mjs`, and
+  regenerate. A form with no quiz questions skips the Knowledge Check step.
+- Adding a form touches: `AcordId` in `src/types.ts`, the module-id lists in `AppContext.tsx`, `assessmentService.ts` and
+  `trainerData.ts`, `src/data/modules.ts`, a migration inserting into `acord_modules`, the rules, and `build-chat-knowledge.mjs`.
 - Use the fillable PDFs `Acord-130-2019.pdf` and `Acord-140.pdf`. Other copies of the 130/140 PDFs are flat (no form fields) and can't be graded.
 - Supabase Free plan caps uploads at 50 MB, so videos must be smaller than that.
 - The ACORD 130 video is third-party (Elevated Success).

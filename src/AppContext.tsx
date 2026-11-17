@@ -34,7 +34,7 @@ interface AppState {
 }
 
 const AppContext = createContext<AppState | null>(null);
-const MODULE_IDS: AcordId[] = ['125', '126', '127', '130', '140'];
+const MODULE_IDS: AcordId[] = ['125', '126', '127', '130', '140', '27'];
 
 function emptyStudent(profile: Profile | null): StudentRecord {
   const name = profile?.full_name || profile?.email?.split('@')[0] || 'Trainee';

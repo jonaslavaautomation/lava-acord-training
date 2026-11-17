@@ -1,4 +1,4 @@
-// Answer-key rules for the five ACORD scenarios (src/data/modules.ts).
+// Answer-key rules for the ACORD scenarios (src/data/modules.ts).
 // Each rule finds ONE field on the uploaded fillable PDF — by its AcroForm name (n) or, for PDFs with
 // generic names like "Text31", by the ACORD tooltip text (tip, nth = 1st/2nd/... match top-to-bottom) —
 // and stores the expected answer the server-side grader uses.
@@ -200,5 +200,29 @@ export const RULES = {
     { key: 'wiring_yr', label: 'Wiring update year', n: 'BuildingImprovement_WiringYear_A', v: '2020', match: 'exact', pts: 2 },
     { key: 'roofing', label: 'Roof update', n: 'BuildingImprovement_RoofingIndicator_A', ...yes, pts: 1 },
     { key: 'roofing_yr', label: 'Roof update year', n: 'BuildingImprovement_RoofingYear_A', v: '2021', match: 'exact', pts: 2 },
+  ],
+
+  // ------------------------------------------------------------------ ACORD 27 — BlueRidge Manufacturing / First Carolina Bank
+  // PROVISIONAL: written from standard ACORD field naming before the ACORD 27 fillable PDF was available.
+  // Verify against the real PDF with `node supabase/answer-keys/build.mjs --check 27=fields.tsv` and adjust.
+  '27': [
+    { key: 'insurer', label: 'Company (insurer)', n: '(Insurer|Company)_FullName_A', v: 'Pinnacle Mutual', match: 'contains', pts: 4, req: true },
+    { key: 'naic', label: 'Insurer NAIC code', n: 'Insurer_NAICCode_A', tip: 'naic', v: '23787', match: 'exact', pts: 2 },
+    { key: 'policy_no', label: 'Policy number', n: 'Policy_PolicyNumberIdentifier_A', tip: 'policy number', v: 'CPP-4471209|CPP4471209', match: 'any-of', pts: 6, req: true, hint: 'Copy the policy number exactly as it appears on the policy.' },
+    { key: 'eff', label: 'Policy effective date', n: 'Policy_EffectiveDate_A', tip: 'effective date', v: '09/01/2026', match: 'exact', pts: 3, req: true, hint: 'Dates use MM/DD/YYYY.' },
+    { key: 'exp', label: 'Policy expiration date', n: 'Policy_ExpirationDate_A', tip: 'expiration date', v: '09/01/2027', match: 'exact', pts: 3, req: true, hint: 'Dates use MM/DD/YYYY.' },
+    { key: 'ni_name', label: 'Named insured', n: 'NamedInsured_FullName_A', tip: 'named insured', v: 'BlueRidge Manufacturing', match: 'contains', pts: 5, req: true },
+    { key: 'ni_addr', label: 'Named insured — street', n: 'NamedInsured_MailingAddress_LineOne_A', v: '1500 Industrial Park', match: 'contains', pts: 2 },
+    { key: 'ni_city', label: 'Named insured — city', n: 'NamedInsured_MailingAddress_CityName_A', v: 'Asheville', match: 'exact', pts: 1 },
+    { key: 'ni_state', label: 'Named insured — state', n: 'NamedInsured_MailingAddress_StateOrProvinceCode_A', v: state('NC', 'North Carolina'), match: 'any-of', pts: 1 },
+    { key: 'ni_zip', label: 'Named insured — ZIP', n: 'NamedInsured_MailingAddress_PostalCode_A', v: '28806', match: 'contains', pts: 1 },
+    { key: 'location', label: 'Property location / description', n: '(CommercialStructure_PhysicalAddress_LineOne|Property_LocationDescription|CommercialStructure_LocationDescription)_A', tip: 'location.*description|description of (the )?property', v: '1500 Industrial Park', match: 'contains', pts: 4, req: true },
+    { key: 'special', label: 'Causes of loss — Special', n: '(CommercialProperty_CauseOfLoss_SpecialIndicator|Property_CausesOfLoss_SpecialIndicator)_A', ...yes, pts: 3, hint: 'The policy is written on the Special causes of loss form.' },
+    { key: 'ai_name', label: 'Additional interest — lender name', n: 'AdditionalInterest_FullName_A', tip: 'additional interest.*name', v: 'First Carolina Bank', match: 'contains', pts: 5, req: true },
+    { key: 'ai_addr', label: 'Additional interest — address', n: 'AdditionalInterest_MailingAddress_LineOne_A', v: 'PO Box 7740|P.O. Box 7740|P O Box 7740|Box 7740', match: 'contains', pts: 2 },
+    { key: 'ai_city', label: 'Additional interest — city', n: 'AdditionalInterest_MailingAddress_CityName_A', v: 'Charlotte', match: 'exact', pts: 1 },
+    { key: 'ai_zip', label: 'Additional interest — ZIP', n: 'AdditionalInterest_MailingAddress_PostalCode_A', v: '28241', match: 'contains', pts: 1 },
+    { key: 'loan_no', label: 'Loan number', n: '(AdditionalInterest_AccountNumberIdentifier|AdditionalInterest_LoanNumberIdentifier)_A', tip: 'loan', v: '88-301557|88301557', match: 'any-of', pts: 6, req: true, hint: 'The bank needs the loan number exactly as given.' },
+    { key: 'mortgagee', label: 'Interest — Mortgagee', n: 'AdditionalInterest_Interest_MortgageeIndicator_A', tip: 'mortgagee', ...yes, pts: 4, req: true, hint: 'The bank is the mortgagee on this building.' },
   ],
 };
