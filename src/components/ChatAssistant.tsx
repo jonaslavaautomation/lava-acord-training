@@ -112,7 +112,8 @@ export function ChatAssistant() {
   const [ready, setReady] = useState<boolean | null>(null);
   const [apiBase, setApiBase] = useState('');
   useEffect(() => {
-    if (!open || ready !== null) return;
+    // Keep checking every few seconds until connected, so it connects by itself once the PC helper is up.
+    if (!open || ready === true) return;
     let cancelled = false;
     const probe = async (base: string) => {
       try {
@@ -122,15 +123,16 @@ export function ChatAssistant() {
         return false;
       }
     };
-    (async () => {
+    const check = async () => {
       let base: string | null = null;
       if (await probe('')) base = '';
       else if (await probe(BRIDGE_URL)) base = BRIDGE_URL;
       if (cancelled) return;
-      setApiBase(base ?? '');
-      setReady(base !== null);
-    })();
-    return () => { cancelled = true; };
+      if (base !== null) { setApiBase(base); setReady(true); } else setReady(false);
+    };
+    check();
+    const timer = window.setInterval(check, 5000);
+    return () => { cancelled = true; window.clearInterval(timer); };
   }, [open, ready]);
   const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
   const viaPc = apiBase === BRIDGE_URL;
@@ -233,15 +235,10 @@ export function ChatAssistant() {
             </>
           ) : (
             <>
-              <p className="text-white font-medium">Can't reach the assistant on your PC.</p>
-              <p>The assistant answers through Claude Code on your computer. It starts by itself when you sign in to Windows. If it isn't running:</p>
-              <ol className="list-decimal pl-5 space-y-1">
-                <li>Double-click <span className="text-slate-200">Start ACORD Assistant</span> on your desktop.</li>
-                <li>If your browser asks to let this site <span className="text-slate-200">access apps on this device</span>, click <span className="text-slate-200">Allow</span>.</li>
-                <li>Click <span className="text-slate-200">Try again</span>.</li>
-              </ol>
-              <button onClick={() => setReady(null)} className="btn-primary w-full py-2.5">Try again</button>
-              <p className="text-[11px] text-muted-500">It only works on the computer where Claude Code is installed and signed in.</p>
+              <p className="text-white font-medium flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin text-lava-400" /> Connecting to the assistant on your PC…</p>
+              <p>The assistant answers through Claude Code on your computer and starts by itself when you sign in to Windows. Right after the PC starts it can take up to a minute. This window connects automatically as soon as it's ready.</p>
+              <p>If your browser asks to let this site <span className="text-slate-200">access apps on this device</span>, click <span className="text-slate-200">Allow</span>.</p>
+              <p className="text-[11px] text-muted-500">Still not connecting after a few minutes? Double-click <span className="text-slate-300">Start ACORD Assistant</span> on your desktop. It only works on the computer where Claude Code is installed and signed in.</p>
             </>
           )}
         </div>
