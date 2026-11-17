@@ -34,7 +34,7 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
 |---|---|---|
 | `supabase/migrations/20261111120000_auto_answer_keys.sql` | `supabase/answer-keys/rules.mjs` | `node supabase/answer-keys/build.mjs` |
 | `supabase/migrations/20261112090000_knowledge_checks.sql` | `supabase/knowledge-checks/questions.mjs` | `node supabase/knowledge-checks/build.mjs` |
-| `api/_acord-knowledge.ts` | `supabase/knowledge-checks/transcripts/*.txt` | `node supabase/knowledge-checks/build-chat-knowledge.mjs` |
+| `api/_acord-knowledge.ts` | `supabase/knowledge-checks/transcripts/*.txt` and `guides/*.txt` | `node supabase/knowledge-checks/build-chat-knowledge.mjs` |
 
 - Answer-key rules find PDF fields by AcroForm name or tooltip. The expected values must match the scenarios in `src/data/modules.ts`; change both together.
   To check which fields a rule picks for a field dump, run `node supabase/answer-keys/build.mjs --check MOD=fields.tsv`.
@@ -42,10 +42,10 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
   Use the transcripts, not general insurance knowledge.
 
 ## Content notes
-- ACORD 27 (Evidence of Property Insurance) was added before its video and fillable PDF existed. Its answer-key rules in
-  `rules.mjs` are provisional (standard ACORD field names): verify them with `--check` once the PDF is available. When the
-  video arrives, transcribe it to `transcripts/acord-27.txt`, write 15 video-based questions in `questions.mjs`, and
-  regenerate. A form with no quiz questions skips the Knowledge Check step.
+- ACORD 27 (Evidence of Property Insurance): video `Acord 27 (1).mp4` (4:52, BCS University, third-party), fillable PDF
+  `Evidence Of Property Ins.pdf` (ACORD 27 2006/07 edition, generic field names like `LOC`, `COVERAGE1`, `CASymbols212`;
+  the rules note each printed label). `supabase/knowledge-checks/guides/acord-27-sop.txt` is the written 14-step process
+  (from `Acord27-.pdf`); files in `guides/` are fed to the chatbot as `<process_guide>`.
 - Adding a form touches: `AcordId` in `src/types.ts`, the module-id lists in `AppContext.tsx`, `assessmentService.ts` and
   `trainerData.ts`, `src/data/modules.ts`, a migration inserting into `acord_modules`, the rules, and `build-chat-knowledge.mjs`.
 - Use the fillable PDFs `Acord-130-2019.pdf` and `Acord-140.pdf`. Other copies of the 130/140 PDFs are flat (no form fields) and can't be graded.

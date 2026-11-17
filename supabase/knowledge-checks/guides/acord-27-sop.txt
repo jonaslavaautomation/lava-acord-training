@@ -1,0 +1,83 @@
+# ACORD 27 — Standard Operating Procedure (from "Acord27-.pdf", generated from the ACORD 27 training video). Text only.
+Standard Operating Procedure
+November 17, 2026
+Complete the ACORD 27 Evidence of Property
+Insurance form
+How to fill in each section of the ACORD 27 Evidence of Property Insurance, a single-page
+document that shows coverage on residential, commercial, or contents property. Completing it
+correctly saves time and money and helps verify coverage details with the insurer.
+For: Insurance agency staff (producers and account managers) who issue Evidence of Property documents
+From the video: U4hptJxdASYsYTy Steps: 14
+WHEN TO USE THIS
+When a client, lender, or other party needs proof of property coverage on an ACORD 27 form
+BEFORE YOU START
+A blank ACORD 27 Evidence of Property Insurance form (the EOP template)
+The agency's name and contact information
+The Insured's name and the policy and carrier details
+The property address and description, the coverages, amounts, and deductibles
+The name and address of the additional interest (for example the lender) and its loan number
+STEPS
+1 Enter the issue date
+In the DATE (MM/DD/YYYY) box at the top right, enter the date the insurance agency created the
+document.
+2 Enter the producer
+In the AGENCY box, enter the name of the insurance agency or broker that issued this certificate.
+
+3 Enter the producer's contact information
+Fill in the agency's contact details (PHONE, FAX, E-MAIL ADDRESS) so the holder can reach the agent
+with questions or to request revisions.
+Tip: Not all agents will work with third parties for revisions.
+4 Enter the Insured
+In the Insured box, enter the first named Insured: the person or company who purchased the insurance
+policy.
+Tip: The first named Insured has important rights and obligations, including paying the premium,
+receiving notice of cancellation, adjusting claims, and making policy changes.
+
+5 Enter the insurance carriers
+In the COMPANY box, list the carriers that provide the insurance policies for the Insured.
+6 Enter the property location and description
+Under PROPERTY INFORMATION, in LOCATION/DESCRIPTION, enter the address of the location and a
+description of the building or property.
+Important: If the proof of coverage is for something other than a building, describe it in great
+detail. For machinery or equipment, include the year, make, model, and serial number.
+
+7 Describe the coverage
+Under COVERAGE INFORMATION, in COVERAGE / PERILS / FORMS, enter a description of the coverage
+provided and the causes of loss (for example special, broad, or basic).
+8 Enter the amount of insurance
+In the AMOUNT OF INSURANCE column, enter the amount of insurance for each coverage.
+
+9 Enter the deductible
+In the DEDUCTIBLE column, enter the deductible for each coverage.
+10 Add remarks
+In REMARKS (Including Special Conditions), enter any additional comments or special conditions on the
+policy.
+
+11 Enter the additional interest's name and address
+Under ADDITIONAL INTEREST, in NAME AND ADDRESS, list the company you are doing business with
+that has a financial interest in the property.
+12 Check the additional interest type
+In the check boxes next to the name and address, check the box for the type of additional interest:
+Additional Insured, Lenders Loss Payable, Loss Payee, Mortgagee, or Other (an interest other than
+these).
+
+13 Enter the loan number
+In LOAN #, enter the account number or other controlling number the additional interest has assigned
+the Insured.
+14 Sign as authorized representative
+In AUTHORIZED REPRESENTATIVE, put the name of the authorized representative.
+Important: A name must be in this box for the certificate to be authorized and accepted.
+NOTES
+The ACORD 27 is a crucial part of a property insurance claim and should not be completed without
+consulting an experienced professional.
+This guide covers the ACORD 27 only; there are other types of Evidence of Property forms.
+
+The form version shown has check boxes for Mortgagee, Loss Payee, and Additional Insured; the
+other interest types may appear on other versions of the form.
+TERMS
+ACORD 27: The Evidence of Property Insurance form
+EOP: Evidence of Property
+Producer: The insurance agency or broker that issued the certificate
+First named Insured: The person or company who purchased the policy; pays the premium and
+receives notice of cancellation
+Additional interest: A company with a financial interest in the property, such as a lender

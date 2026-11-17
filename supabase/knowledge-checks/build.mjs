@@ -105,9 +105,12 @@ GRANT SELECT, DELETE ON public.knowledge_check_attempts TO authenticated;
 -- Inserts only happen through submit_knowledge_check() (SECURITY DEFINER).
 
 -- ============================================================ question bank
+-- Questions for a form that isn't in acord_modules yet are skipped; run this file again after adding the form.
 INSERT INTO public.knowledge_check_questions (module_id, question_key, sort_order, prompt, options, correct_index, explanation)
-VALUES
+SELECT v.* FROM (VALUES
 ${values}
+) AS v(module_id, question_key, sort_order, prompt, options, correct_index, explanation)
+WHERE EXISTS (SELECT 1 FROM public.acord_modules m WHERE m.id = v.module_id)
 ON CONFLICT (module_id, question_key) DO UPDATE SET
   sort_order = EXCLUDED.sort_order, prompt = EXCLUDED.prompt, options = EXCLUDED.options,
   correct_index = EXCLUDED.correct_index, explanation = EXCLUDED.explanation, is_active = true, updated_at = now();

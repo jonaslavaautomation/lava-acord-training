@@ -353,7 +353,7 @@ export const MODULE_27: AcordModule = {
   category: 'Property',
   videoTitle: 'ACORD 27 — Evidence of Property Insurance',
   videoDescription: 'Issue evidence of property coverage to a mortgagee or lender with the correct policy, property, and interest details.',
-  videoDuration: '—',
+  videoDuration: '4:52',
   introduction: {
     purpose: 'The ACORD 27 (Evidence of Property Insurance) shows a mortgagee, lender, or other interested party that a property policy is in force. It summarizes the insurer, policy number, policy period, the insured property, the coverages and limits, and names the interested party. It does not change the policy; it is evidence only.',
     agencyRole: 'Account managers and VAs issue the ACORD 27 when a bank or lender asks for proof of insurance, usually for a mortgage or loan. The details must match the policy exactly: wrong limits, a wrong loan number, or a missing mortgagee checkbox can delay a closing or trigger force-placed insurance by the lender.',
@@ -369,6 +369,7 @@ export const MODULE_27: AcordModule = {
       'List each coverage with its limit and deductible, and the causes of loss form.',
       'Enter the lender as the additional interest with the correct loan number and interest type (mortgagee).',
       'Know that the ACORD 27 is evidence only and does not change or add coverage.',
+      'Remember that a name must be in the Authorized Representative box for the evidence to be accepted.',
     ],
   },
   scenario: {
@@ -385,8 +386,13 @@ INSURED
 BlueRidge Manufacturing, Inc.
 1500 Industrial Park Lane, Asheville, NC 28806
 
+OUR AGENCY (producer)
+Pinnacle Surety & Insurance Agency
+48 Patton Avenue, Suite 300, Asheville, NC 28801
+Phone (828) 555-0190 | Fax (828) 555-0191 | service@pinnaclesurety.com
+
 POLICY
-Insurer: Pinnacle Mutual Insurance Company (NAIC 23787)
+Insurer: Keystone Mutual Insurance Company
 Policy number: CPP-4471209
 Policy period: 09/01/2026 to 09/01/2027
 
@@ -405,8 +411,9 @@ First Carolina Bank, ISAOA/ATIMA
 PO Box 7740, Charlotte, NC 28241
 Loan number: 88-301557
 Interest: Mortgagee
+The bank requires 10 days written notice of cancellation.
 
-Please prepare the ACORD 27 for the bank.
+Please prepare the ACORD 27 for the bank. I'll sign it as the authorized representative.
 
 Karen`,
   },
