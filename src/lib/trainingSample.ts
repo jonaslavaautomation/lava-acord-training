@@ -1,6 +1,8 @@
 import { supabase } from './supabase';
 import { downloadMaterialBytes, getFormFields, listMaterials } from './materialsService';
 import { buildTrainingSamplePdf } from './trainingSamplePdf';
+import { acord27ToFieldValues, AUTHORIZED_REP_STAMP, type Acord27Data } from './acord27Layout';
+import { PDFDocument } from 'pdf-lib';
 import type { AcordId } from '@/types';
 
 /** Forms that can be sampled. The server enforces the same list (get_training_sample). */
@@ -62,16 +64,63 @@ export async function generateTrainingSample(moduleId: AcordId): Promise<Trainin
   };
 }
 
+/**
+ * Builds a watermarked ACORD 27 training sample from the user's OWN information (what the AI read from their
+ * question, notes and photos), instead of the practice scenario. Same watermark and 20-minute lifetime; nothing stored.
+ */
+export async function generateCustomTrainingSample(data: Acord27Data): Promise<TrainingSample> {
+  const material = (await listMaterials({ moduleId: '27' })).find((m) => m.material_type === 'pdf' && m.is_current);
+  if (!material) throw new Error(SAMPLE_ERRORS.NO_PDF);
+  const master = await downloadMaterialBytes(material);
+  const names = (await PDFDocument.load(master.slice(), { updateMetadata: false })).getForm().getFields().map((f) => f.getName());
+  const values = acord27ToFieldValues(data, names);
+  if (!values) throw new Error('This ACORD 27 PDF edition is not supported for custom samples. Use the "Evidence Of Property Ins.pdf" (ACORD 27 2006/07).');
+  if (Object.keys(values).length === 0) throw new Error('I could not find any ACORD 27 details in your information. Add the policy, property or lender details and try again.');
+
+  const createdAt = Date.now();
+  const expiresAt = createdAt + SAMPLE_LIFETIME_MS;
+  const stamps = data.authorized_representative ? [{ text: data.authorized_representative, ...AUTHORIZED_REP_STAMP }] : [];
+  const { bytes, fieldCount } = await buildTrainingSamplePdf(master, values, [], { moduleId: '27', createdAt, expiresAt, source: 'built from your information' }, stamps);
+  return {
+    moduleId: '27',
+    fileName: 'TRAINING-SAMPLE-ACORD-27-custom.pdf',
+    url: URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' })),
+    createdAt,
+    expiresAt,
+    fieldCount,
+  };
+}
+
 /** Deletes a sample from the app (its link stops working). */
 export function destroyTrainingSample(sample: Pick<TrainingSample, 'url'>): void {
   URL.revokeObjectURL(sample.url);
 }
 
-/** Recognises "make a sample ACORD 27"-style requests. Returns the requested form, 'other' for a non-sample form, or null. */
+/**
+ * Recognises sample requests: "make a sample ACORD 27", "fill an ACORD 27 with this", "create an evidence of property
+ * from my dec page". Returns '27', 'other' (a sample of another form), or null (a normal question for the AI).
+ */
 export function parseSampleRequest(text: string): '27' | 'other' | null {
   const t = text.toLowerCase();
-  if (!/\b(sample|example|specimen|mock|demo)\b/.test(t) || !/\b(acord|form|evidence|eop)\b/.test(t)) return null;
-  const forms = t.match(/\b(27|125|126|127|130|140)\b/g) ?? [];
+  const forms = t.match(/\bacord\s*#?\s*(27|125|126|127|130|140)\b|\b(27|125|126|127|130|140)\b/g)?.map((f) => f.replace(/\D/g, '')) ?? [];
+  const mentions27 = forms.includes('27') || /\bevidence of property\b|\beop\b/.test(t);
+  const wantsSample = /\b(sample|example|specimen|mock|demo)\b/.test(t);
+  // "fill / create / make an ACORD 27" counts too, but not questions like "how do I fill the ACORD 27?"
+  const wantsFilled = /\b(fill|create|generate|make|build|prepare|produce)\b/.test(t) && !/^\s*(how|what|why|where|when|who|which|can i|should i|do i)\b/.test(t);
+  if (!wantsSample && !(wantsFilled && mentions27)) return null;
+  if (!wantsSample && !mentions27) return null;
+  if (wantsSample && !mentions27 && !/\b(acord|form)\b/.test(t)) return null;
   if (forms.some((f) => f !== '27')) return 'other';
   return '27';
+}
+
+/**
+ * True when the sample should be built from the user's OWN information rather than the practice scenario:
+ * a photo is attached, the message contains details (numbers, names, addresses), or it points at earlier messages.
+ */
+export function isCustomSampleRequest(text: string, hasImages: boolean, hasEarlierInfo: boolean): boolean {
+  if (hasImages) return true;
+  const rest = text.toLowerCase().replace(/\bacord\s*#?\s*27\b/g, '');
+  if (/\d/.test(rest) || rest.length > 120) return true;
+  return hasEarlierInfo && /\b(this|these|that|above|attached|uploaded|my|from|based on|using)\b/.test(rest);
 }

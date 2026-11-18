@@ -14,7 +14,9 @@ export async function buildTrainingSamplePdf(
   master: Uint8Array,
   sampleValues: Record<string, string>,
   customFields: PdfFieldInfo[],
-  meta: { moduleId: string; createdAt: number; expiresAt: number },
+  meta: { moduleId: string; createdAt: number; expiresAt: number; source?: string },
+  /** Extra text printed on page 1 where the form has no field (e.g. the authorized representative's name). */
+  stamps: { text: string; x: number; y: number; size: number }[] = [],
 ): Promise<{ bytes: Uint8Array; fieldCount: number }> {
   // Single-line boxes can't show line breaks: join address lines with commas there.
   const values = { ...sampleValues };
@@ -36,8 +38,11 @@ export async function buildTrainingSamplePdf(
   } catch { /* already flat */ }
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const regular = await doc.embedFont(StandardFonts.Helvetica);
-  const banner = `TRAINING SAMPLE - NOT EVIDENCE OF INSURANCE - fictional data - created ${stamp(meta.createdAt)}, expires ${stamp(meta.expiresAt)}`;
+  const banner = `TRAINING SAMPLE - NOT EVIDENCE OF INSURANCE - ${meta.source ?? 'fictional data'} - created ${stamp(meta.createdAt)}, expires ${stamp(meta.expiresAt)}`;
   const red = rgb(0.86, 0.1, 0.18);
+
+  const first = doc.getPages()[0];
+  for (const st of stamps) if (first && st.text) first.drawText(st.text, { x: st.x, y: st.y, size: st.size, font: regular, color: rgb(0, 0, 0) });
 
   for (const page of doc.getPages()) {
     const { width, height } = page.getSize();

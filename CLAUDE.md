@@ -50,6 +50,9 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
   in the ACORD Assistant. `get_training_sample()` (staff-only, allow-list `'27'`) returns answer-key values, using each
   rule's `sample` text; `src/lib/trainingSamplePdf.ts` fills, flattens and watermarks "TRAINING PURPOSES ONLY" in the
   browser. Nothing is stored; the blob URL is revoked after 20 minutes. Never let trainees reach these values.
+  Custom samples: a request with the user's own details or a photo ("create a sample ACORD 27 from this") is sent to
+  `/api/chat` with `task: "acord27"`; `acord27Prompt()` makes the AI return the ACORD 27 boxes as JSON (never inventing
+  missing data), and `src/lib/acord27Layout.ts` maps them onto the 2006/07 PDF's fields. Needs the AI chat (admin's PC).
 - Adding a form touches: `AcordId` in `src/types.ts`, the module-id lists in `AppContext.tsx`, `assessmentService.ts` and
   `trainerData.ts`, `src/data/modules.ts`, a migration inserting into `acord_modules`, the rules, and `build-chat-knowledge.mjs`.
 - Use the fillable PDFs `Acord-130-2019.pdf` and `Acord-140.pdf`. Other copies of the 130/140 PDFs are flat (no form fields) and can't be graded.

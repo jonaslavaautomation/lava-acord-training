@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Bot, Download, ExternalLink, FileText, ImagePlus, Laptop, Loader2, MessageCircle, RotateCcw, Send, Timer, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { destroyTrainingSample, generateTrainingSample, parseSampleRequest, SAMPLE_LIFETIME_MS, type TrainingSample } from '../lib/trainingSample';
+import { destroyTrainingSample, generateCustomTrainingSample, generateTrainingSample, isCustomSampleRequest, parseSampleRequest, SAMPLE_LIFETIME_MS, type TrainingSample } from '../lib/trainingSample';
+import { parseAcord27Reply } from '../lib/acord27Layout';
 
 interface ChatImage { media_type: string; data: string; preview: string }
 interface ChatMessage {
@@ -223,20 +224,68 @@ export function ChatAssistant() {
     setError(null);
   };
 
-  const makeSample = async (requestText: string, form: '27' | 'other') => {
+  /** Reads a streamed /api/chat reply to the end. */
+  const readReply = async (res: Response) => {
+    if (!res.ok || !res.body) {
+      const err = await res.json().catch(() => null);
+      throw new Error(err?.error ?? 'The assistant is not available right now.');
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let text = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      text += decoder.decode(value, { stream: true });
+    }
+    return text;
+  };
+
+  /**
+   * Standard sample: the practice scenario's correct answers.
+   * Custom sample: the AI reads the user's own question, notes and photos and the app fills the ACORD 27 with them.
+   */
+  const makeSample = async (requestText: string, form: '27' | 'other', custom = false) => {
+    const images = custom ? pending : [];
+    const userMsg: ChatMessage = { role: 'user', text: requestText || 'Create a sample ACORD 27 from this.', images, local: !custom };
+    const history = [...messages, userMsg];
     setInput('');
+    if (custom) setPending([]);
     setError(null);
     const reply = (m: Partial<ChatMessage>) => setMessages((all) => [...all.slice(0, -1), { role: 'assistant', text: '', local: true, ...m }]);
-    setMessages((all) => [...all, { role: 'user', text: requestText, local: true }, { role: 'assistant', text: '', local: true }]);
+    setMessages([...history, { role: 'assistant', text: '', local: true }]);
     if (form === 'other') {
       reply({ text: 'Training samples are available for the **ACORD 27** only. Ask me for a "sample ACORD 27".' });
       return;
     }
+    if (custom && ready !== true) {
+      reply({ text: isAdmin
+        ? "To build a sample from your own information I need the AI chat, which isn't connected yet. Wait a moment for it to connect, then ask again. The standard sample works right now."
+        : "Building a sample from your own information needs the AI chat, which runs on the administrator's computer. You can still create the standard sample ACORD 27." });
+      return;
+    }
     setBusy(true);
     try {
-      const sample = await generateTrainingSample('27');
+      let sample: TrainingSample;
+      let text: string;
+      if (custom) {
+        reply({ text: 'Reading your information and filling the ACORD 27…' });
+        const { data } = await supabase.auth.getSession();
+        const res = await fetch(`${apiBase}/api/chat`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', authorization: `Bearer ${data.session?.access_token ?? ''}` },
+          body: JSON.stringify({ task: 'acord27', messages: toPayload(history) }),
+        });
+        const extracted = parseAcord27Reply(await readReply(res));
+        sample = await generateCustomTrainingSample(extracted);
+        const missing = (extracted.missing ?? []).filter(Boolean);
+        text = `${extracted.summary ?? 'Here is your ACORD 27 built from your information.'}${missing.length ? `\n\n**Not in your information (left blank):** ${missing.join(', ')}.` : ''}\n\nIt is watermarked for training and will be removed in ${SAMPLE_LIFETIME_MS / 60000} minutes.`;
+      } else {
+        sample = await generateTrainingSample('27');
+        text = `Here is a watermarked ACORD 27 sample. Use it to check that each answer sits in the right box. It will be removed in ${SAMPLE_LIFETIME_MS / 60000} minutes.`;
+      }
       samplesRef.current.push(sample);
-      reply({ text: `Here is a watermarked ACORD 27 sample. Use it to check that each answer sits in the right box. It will be removed in ${SAMPLE_LIFETIME_MS / 60000} minutes.`, sample });
+      reply({ text, sample });
     } catch (e) {
       reply({ text: `I couldn't create the sample: ${(e as Error).message}` });
     } finally {
@@ -244,11 +293,22 @@ export function ChatAssistant() {
     }
   };
 
+  /** Puts a starter sentence in the box so the user can add their details or a photo. */
+  const startCustomSample = () => {
+    setInput('Create a sample ACORD 27 from this information: ');
+    setError(null);
+    window.setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
   const send = async (textOverride?: string) => {
     const text = (textOverride ?? input).trim();
     if (busy || (!text && pending.length === 0)) return;
-    const sampleRequest = isStaff && pending.length === 0 ? parseSampleRequest(text) : null;
-    if (sampleRequest) { await makeSample(text, sampleRequest); return; }
+    const sampleRequest = isStaff && text ? parseSampleRequest(text) : null;
+    if (sampleRequest) {
+      const custom = sampleRequest === '27' && isCustomSampleRequest(text, pending.length > 0, messages.some((m) => m.role === 'user' && !m.local));
+      await makeSample(text, sampleRequest, custom);
+      return;
+    }
     if (ready !== true) {
       setError(isStaff ? "The AI chat isn't connected right now. You can still create a training sample." : "The AI chat isn't connected right now.");
       return;
@@ -371,6 +431,13 @@ export function ChatAssistant() {
             <span className="block text-xs text-muted-400">Trainers: the ACORD 27 filled with the correct answers, watermarked "Training purposes only". Available for 20 minutes.</span>
           </button>
         )}
+        {messages.length === 0 && isStaff && (
+          <button onClick={startCustomSample} disabled={busy}
+            className="w-full text-left p-3 rounded-lg border border-line-subtle bg-bg-base hover:border-lava-600/40 space-y-1">
+            <span className="flex items-center gap-2 text-sm font-medium text-white"><ImagePlus className="w-4 h-4 text-lava-400" /> ACORD 27 from my information</span>
+            <span className="block text-xs text-muted-400">Type the details or attach a photo (for example a declarations page or the lender's request). The assistant fills an ACORD 27 with them, watermarked, for 20 minutes.</span>
+          </button>
+        )}
         {messages.map((m, i) => (
           <div key={i} className={m.role === 'user' ? 'flex justify-end' : 'flex gap-2'}>
             {m.role === 'assistant' && <div className="w-6 h-6 rounded-full bg-lava-600/20 flex items-center justify-center shrink-0 mt-0.5"><Bot className="w-3.5 h-3.5 text-lava-400" /></div>}
@@ -399,6 +466,12 @@ export function ChatAssistant() {
           <button onClick={() => makeSample('Generate a sample ACORD 27', '27')} disabled={busy}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-lava-600/30 text-[11px] text-slate-300 hover:bg-lava-600/10">
             <FileText className="w-3.5 h-3.5 text-lava-400" /> Sample ACORD 27
+          </button>
+        )}
+        {isStaff && messages.length > 0 && (
+          <button onClick={startCustomSample} disabled={busy}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-line-subtle text-[11px] text-slate-300 hover:bg-bg-hover">
+            <ImagePlus className="w-3.5 h-3.5 text-lava-400" /> ACORD 27 from my info
           </button>
         )}
         {pending.length > 0 && (

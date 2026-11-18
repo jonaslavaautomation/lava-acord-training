@@ -32,6 +32,42 @@ Transcripts of the LAVA training videos (automatic speech-to-text: "Accord", "a 
 
 ${VIDEO_TRANSCRIPTS}`;
 
+/**
+ * task "acord27": read the user's own question, notes and photos (dec pages, emails...) and return the ACORD 27
+ * box values as JSON. The app then fills a watermarked training sample with them (src/lib/acord27Layout.ts).
+ */
+export function acord27Prompt(): string {
+  const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', timeZone: 'America/New_York' });
+  return `You fill out an ACORD 27 (Evidence of Property Insurance, 2006/07 edition) for a TRAINING SAMPLE, using only the information, documents and photos the user provided in this conversation (for example a declarations page, an email from a lender, or typed notes).
+
+Reply with ONLY one JSON object: no prose, no code fences. Omit any key you have no information for. Never invent names, policy or loan numbers, amounts, dates or addresses: if something isn't in the user's information, leave it out and list it in "missing".
+
+Keys (all values are strings unless noted):
+- issue_date: date the evidence is issued, MM/DD/YYYY. If not given, use today: ${today}
+- agency_name_address: producer/agency name and mailing address (use \\n between lines)
+- agency_phone, agency_fax, agency_email, agency_code, agency_subcode, agency_customer_id
+- company_name_address: the insurance company (insurer) name, and address if given
+- insured_name_address: first named insured name and mailing address (\\n between lines)
+- loan_number: the insured's loan number shown at the top (usually the same as the lender's loan number)
+- policy_number: exactly as shown, including prefix
+- effective_date, expiration_date: MM/DD/YYYY
+- continued_until_terminated: boolean, only true if the policy is continuous until terminated
+- replaces_prior_evidence_dated: MM/DD/YYYY, only if this replaces a prior evidence
+- property_location_description: street address of the location and a brief description of the building or property (no "Location 1:" label). For equipment or machinery include year, make, model and serial number
+- coverages: array (max 8) of { "description": coverage name + causes of loss (basic, broad or special) + form number if given, at most 70 characters because the box is one line (for example "Business Income w/ EE, 12 mo, Special Form CP 10 30"), "amount": amount of insurance like "$1,250,000" or "Actual Loss Sustained", "deductible": like "$2,500" }
+- remarks: special conditions or additional comments, if any
+- cancellation_notice_days: number of days written notice of cancellation to the additional interest
+- additional_interest_name_address: lender or other interest name and address (\\n between lines); include ISAOA/ATIMA if given
+- interest_mortgagee, interest_additional_insured, interest_loss_payee: booleans for the interest type
+- interest_other: text, only for an interest type other than mortgagee, additional insured or loss payee (for example "Lender's Loss Payable")
+- additional_interest_loan_number: loan or account number the additional interest assigned to the insured
+- authorized_representative: name of the person signing, if given
+- summary: one or two plain-English sentences saying what you filled in
+- missing: array of important ACORD 27 items not found in the user's information
+
+If the user's information is not about a property policy at all, reply {"summary": "<short reason>", "missing": []}.`;
+}
+
 interface ChatImage { media_type: string; data: string }
 interface ChatMessage { role: 'user' | 'assistant'; text: string; images?: ChatImage[] }
 
@@ -101,10 +137,13 @@ export async function POST(request: Request): Promise<Response> {
     if (!me || !allowed.includes(me.role)) return json(403, 'The ACORD Assistant is not available for your account yet.');
   }
 
-  let body: { messages?: unknown };
+  let body: { messages?: unknown; task?: unknown };
   try { body = await request.json(); } catch { return json(400, 'Bad request.'); }
   const messages = toAnthropicMessages(body.messages);
   if (typeof messages === 'string') return json(400, messages);
+  // task "acord27" = fill an ACORD 27 training sample from the user's information (JSON reply); default = tutor chat.
+  const fillAcord27 = body.task === 'acord27';
+  const systemText = fillAcord27 ? acord27Prompt() : SYSTEM_PROMPT;
 
   const encoder = new TextEncoder();
 
@@ -114,7 +153,7 @@ export async function POST(request: Request): Promise<Response> {
         const send = (s: string) => controller.enqueue(encoder.encode(s));
         try {
           const { streamViaClaudeCode } = await import('./_claude-code.js');
-          await streamViaClaudeCode(SYSTEM_PROMPT, messages, send);
+          await streamViaClaudeCode(systemText, messages, send);
         } catch (err) {
           console.error('ACORD Assistant (Claude Code) error', err);
           send(`\n\n${(err as Error).message}`);
@@ -138,8 +177,10 @@ export async function POST(request: Request): Promise<Response> {
           // If a safety classifier declines on this model, the API retries on a suitable fallback model.
           betas: ['server-side-fallback-2026-07-01'],
           fallbacks: 'default',
-          // The long system prompt (instructions + video transcripts) is cached between requests.
-          system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral', ttl: '1h' } }],
+          // The long tutor prompt (instructions + video transcripts) is cached between requests.
+          system: fillAcord27
+            ? [{ type: 'text', text: systemText }]
+            : [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral', ttl: '1h' } }],
           messages,
           metadata: { user_id: auth.user.id },
         });
