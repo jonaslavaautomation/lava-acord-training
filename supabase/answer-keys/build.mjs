@@ -18,7 +18,7 @@ const rows = Object.entries(RULES).flatMap(([moduleId, rules]) => {
     return {
       module_id: moduleId, rule_key: r.key, label: r.label, name_rx: nameRx(r.n), tip_rx: r.tip ?? null, nth: r.nth ?? 1,
       field_kind: kindOf(r), expected_value: r.v ?? '', match_type: r.match, points: r.pts, required: !!r.req,
-      missing_rule: r.miss ?? 'penalize', feedback_hint: r.hint ?? null, sort_order: i + 1,
+      missing_rule: r.miss ?? 'penalize', feedback_hint: r.hint ?? null, sort_order: i + 1, sample_value: r.sample ?? null,
     };
   });
 });
@@ -58,7 +58,7 @@ if (process.argv.includes('--check')) {
 const q = (v) => (v === null ? 'NULL' : `'${String(v).replace(/'/g, "''")}'`);
 const values = rows.map((r) =>
   `  (${[q(r.module_id), q(r.rule_key), q(r.label), q(r.name_rx), q(r.tip_rx), r.nth, q(r.field_kind), q(r.expected_value),
-    q(r.match_type), r.points, r.required, q(r.missing_rule), q(r.feedback_hint), r.sort_order].join(', ')})`).join(',\n');
+    q(r.match_type), r.points, r.required, q(r.missing_rule), q(r.feedback_hint), r.sort_order, q(r.sample_value)].join(', ')})`).join(',\n');
 
 const sql = `/*
 # Automatic answer keys
@@ -93,16 +93,18 @@ CREATE TABLE IF NOT EXISTS lava_private.answer_key_rules (
 );
 ALTER TABLE lava_private.answer_key_rules DROP CONSTRAINT IF EXISTS answer_key_rules_field_kind_check;
 ALTER TABLE lava_private.answer_key_rules ADD CONSTRAINT answer_key_rules_field_kind_check CHECK (field_kind IN ('text', 'checkbox', 'radio'));
+-- sample_value: nicely formatted text for the watermarked training sample (falls back to the expected answer).
+ALTER TABLE lava_private.answer_key_rules ADD COLUMN IF NOT EXISTS sample_value text;
 REVOKE ALL ON lava_private.answer_key_rules FROM PUBLIC, anon, authenticated;
 
 DELETE FROM lava_private.answer_key_rules;
 -- Rules for a form that isn't in acord_modules yet (e.g. a newly added ACORD form whose migration hasn't been run)
 -- are skipped; run this file again after adding the form.
 INSERT INTO lava_private.answer_key_rules
-  (module_id, rule_key, label, name_rx, tip_rx, nth, field_kind, expected_value, match_type, points, required, missing_rule, feedback_hint, sort_order)
+  (module_id, rule_key, label, name_rx, tip_rx, nth, field_kind, expected_value, match_type, points, required, missing_rule, feedback_hint, sort_order, sample_value)
 SELECT v.* FROM (VALUES
 ${values}
-) AS v(module_id, rule_key, label, name_rx, tip_rx, nth, field_kind, expected_value, match_type, points, required, missing_rule, feedback_hint, sort_order)
+) AS v(module_id, rule_key, label, name_rx, tip_rx, nth, field_kind, expected_value, match_type, points, required, missing_rule, feedback_hint, sort_order, sample_value)
 WHERE EXISTS (SELECT 1 FROM public.acord_modules m WHERE m.id = v.module_id);
 
 CREATE OR REPLACE FUNCTION public.auto_configure_answer_key(p_material_id uuid, p_overwrite boolean DEFAULT false)

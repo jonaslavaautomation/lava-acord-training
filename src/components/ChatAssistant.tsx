@@ -1,9 +1,19 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Bot, ImagePlus, Laptop, Loader2, MessageCircle, RotateCcw, Send, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Bot, Download, ExternalLink, FileText, ImagePlus, Laptop, Loader2, MessageCircle, RotateCcw, Send, Timer, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
+import { destroyTrainingSample, generateTrainingSample, parseSampleRequest, SAMPLE_LIFETIME_MS, type TrainingSample } from '../lib/trainingSample';
 
 interface ChatImage { media_type: string; data: string; preview: string }
-interface ChatMessage { role: 'user' | 'assistant'; text: string; images?: ChatImage[] }
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  text: string;
+  images?: ChatImage[];
+  /** Handled inside the app (training samples); never sent to the AI. */
+  local?: boolean;
+  sample?: TrainingSample;
+  expired?: boolean;
+}
 
 /** The ACORD Assistant bridge on the owner's PC (scripts/assistant-bridge.mjs). Only reachable from that PC. */
 const BRIDGE_URL = 'http://127.0.0.1:5174';
@@ -82,8 +92,46 @@ function Markdown({ text }: { text: string }) {
   return <div className="space-y-2">{blocks}</div>;
 }
 
-/** Sends the conversation with only the newest few images, to keep requests small. */
-function toPayload(messages: ChatMessage[]) {
+/** Watermarked training sample with a live 20-minute countdown; deleted from the app when time is up. */
+function SampleCard({ sample, expired, onExpire }: { sample: TrainingSample; expired?: boolean; onExpire: (url: string) => void }) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    if (expired) return;
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, [expired]);
+  const left = Math.max(0, sample.expiresAt - now);
+  useEffect(() => { if (!expired && left === 0) onExpire(sample.url); }, [expired, left, onExpire, sample.url]);
+  if (expired) {
+    return (
+      <div className="p-3 rounded-lg border border-line-subtle bg-bg-base text-xs text-muted-500">
+        This ACORD {sample.moduleId} training sample expired after 20 minutes and was removed.
+      </div>
+    );
+  }
+  const mm = String(Math.floor(left / 60000)).padStart(2, '0');
+  const ss = String(Math.floor((left % 60000) / 1000)).padStart(2, '0');
+  return (
+    <div className="p-3 rounded-lg border border-lava-600/30 bg-lava-600/5 space-y-2.5">
+      <div className="flex items-center gap-2">
+        <FileText className="w-4 h-4 text-lava-400" />
+        <span className="text-sm font-medium text-white flex-1">Training sample: ACORD {sample.moduleId}</span>
+        <span className={`flex items-center gap-1 text-xs font-mono ${left < 120000 ? 'text-lava-300' : 'text-muted-400'}`}><Timer className="w-3.5 h-3.5" />{mm}:{ss}</span>
+      </div>
+      <p className="text-xs text-muted-400">
+        Filled with the practice scenario's correct answers ({sample.fieldCount} fields) and watermarked "TRAINING PURPOSES ONLY". It is removed from the app when the timer reaches 00:00.
+      </p>
+      <div className="flex gap-2">
+        <a href={sample.url} target="_blank" rel="noreferrer" className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5"><ExternalLink className="w-3.5 h-3.5" /> Open sample</a>
+        <a href={sample.url} download={sample.fileName} className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5"><Download className="w-3.5 h-3.5" /> Download</a>
+      </div>
+    </div>
+  );
+}
+
+/** Sends the conversation with only the newest few images, to keep requests small. Sample messages stay in the app. */
+function toPayload(allMessages: ChatMessage[]) {
+  const messages = allMessages.filter((m) => !m.local);
   let budget = MAX_IMAGES_SENT;
   return messages.slice().reverse().map((m) => {
     const keep = (m.images ?? []).slice(0, Math.max(0, budget));
@@ -95,6 +143,7 @@ function toPayload(messages: ChatMessage[]) {
 }
 
 export function ChatAssistant() {
+  const { isAdmin, isStaff } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -126,14 +175,15 @@ export function ChatAssistant() {
     const check = async () => {
       let base: string | null = null;
       if (await probe('')) base = '';
-      else if (await probe(BRIDGE_URL)) base = BRIDGE_URL;
+      // Only the administrator's own PC runs the Claude Code helper; don't make trainers' browsers look for it.
+      else if (isAdmin && await probe(BRIDGE_URL)) base = BRIDGE_URL;
       if (cancelled) return;
       if (base !== null) { setApiBase(base); setReady(true); } else setReady(false);
     };
     check();
     const timer = window.setInterval(check, 5000);
     return () => { cancelled = true; window.clearInterval(timer); };
-  }, [open, ready]);
+  }, [open, ready, isAdmin]);
   const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
   const viaPc = apiBase === BRIDGE_URL;
 
@@ -155,9 +205,54 @@ export function ChatAssistant() {
     }
   };
 
+  // ---------------------------------------------------------------- training samples (built in the app, not by the AI)
+  const samplesRef = useRef<TrainingSample[]>([]);
+  useEffect(() => () => samplesRef.current.forEach(destroyTrainingSample), []);
+
+  const expireSample = useCallback((url: string) => {
+    const s = samplesRef.current.find((x) => x.url === url);
+    if (s) destroyTrainingSample(s);
+    samplesRef.current = samplesRef.current.filter((x) => x.url !== url);
+    setMessages((m) => m.map((x) => (x.sample?.url === url ? { ...x, expired: true } : x)));
+  }, []);
+
+  const clearConversation = () => {
+    samplesRef.current.forEach(destroyTrainingSample);
+    samplesRef.current = [];
+    setMessages([]);
+    setError(null);
+  };
+
+  const makeSample = async (requestText: string, form: '27' | 'other') => {
+    setInput('');
+    setError(null);
+    const reply = (m: Partial<ChatMessage>) => setMessages((all) => [...all.slice(0, -1), { role: 'assistant', text: '', local: true, ...m }]);
+    setMessages((all) => [...all, { role: 'user', text: requestText, local: true }, { role: 'assistant', text: '', local: true }]);
+    if (form === 'other') {
+      reply({ text: 'Training samples are available for the **ACORD 27** only. Ask me for a "sample ACORD 27".' });
+      return;
+    }
+    setBusy(true);
+    try {
+      const sample = await generateTrainingSample('27');
+      samplesRef.current.push(sample);
+      reply({ text: `Here is a watermarked ACORD 27 sample. Use it to check that each answer sits in the right box. It will be removed in ${SAMPLE_LIFETIME_MS / 60000} minutes.`, sample });
+    } catch (e) {
+      reply({ text: `I couldn't create the sample: ${(e as Error).message}` });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const send = async (textOverride?: string) => {
     const text = (textOverride ?? input).trim();
     if (busy || (!text && pending.length === 0)) return;
+    const sampleRequest = isStaff && pending.length === 0 ? parseSampleRequest(text) : null;
+    if (sampleRequest) { await makeSample(text, sampleRequest); return; }
+    if (ready !== true) {
+      setError(isStaff ? "The AI chat isn't connected right now. You can still create a training sample." : "The AI chat isn't connected right now.");
+      return;
+    }
     const userMsg: ChatMessage = { role: 'user', text: text || 'Please look at this image.', images: pending };
     const history = [...messages, userMsg];
     setMessages([...history, { role: 'assistant', text: '' }]);
@@ -220,12 +315,12 @@ export function ChatAssistant() {
           </div>
         </div>
         {messages.length > 0 && (
-          <button onClick={() => { setMessages([]); setError(null); }} disabled={busy} title="New conversation" className="p-1.5 rounded-md text-muted-400 hover:text-white hover:bg-bg-hover"><RotateCcw className="w-4 h-4" /></button>
+          <button onClick={clearConversation} disabled={busy} title="New conversation" className="p-1.5 rounded-md text-muted-400 hover:text-white hover:bg-bg-hover"><RotateCcw className="w-4 h-4" /></button>
         )}
         <button onClick={() => setOpen(false)} title="Close" className="p-1.5 rounded-md text-muted-400 hover:text-white hover:bg-bg-hover"><X className="w-4 h-4" /></button>
       </div>
 
-      {ready === false ? (
+      {ready === false && messages.length === 0 && !isStaff ? (
         <div className="flex-1 overflow-y-auto px-5 py-6 space-y-4 text-sm text-muted-400 leading-relaxed">
           <div className="w-10 h-10 rounded-full bg-lava-600/15 flex items-center justify-center"><Laptop className="w-5 h-5 text-lava-400" /></div>
           {isLocal ? (
@@ -245,7 +340,19 @@ export function ChatAssistant() {
       ) : (
       <>
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4 text-sm">
-        {messages.length === 0 && (
+        {messages.length === 0 && ready === false && (
+          <div className="p-3 rounded-lg border border-line-subtle bg-bg-base text-xs text-muted-400 leading-relaxed space-y-1.5">
+            {isAdmin ? (
+              <>
+                <p className="text-slate-200 flex items-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin text-lava-400" /> Connecting to the AI chat on your PC…</p>
+                <p>It starts by itself when you sign in to Windows and connects here automatically. If your browser asks to let this site access apps on this device, click Allow. Training samples work right away.</p>
+              </>
+            ) : (
+              <p>The AI chat runs on the administrator's computer, so it isn't available here. You can still create a watermarked training sample below.</p>
+            )}
+          </div>
+        )}
+        {messages.length === 0 && ready !== false && (
           <div className="space-y-3">
             <p className="text-muted-400 leading-relaxed">
               Hi! Ask me anything about ACORD forms. You can also <span className="text-slate-200">paste (Ctrl+V)</span>, drag in or attach a screenshot or photo of a form and ask about it.
@@ -256,6 +363,13 @@ export function ChatAssistant() {
               ))}
             </div>
           </div>
+        )}
+        {messages.length === 0 && isStaff && (
+          <button onClick={() => makeSample('Generate a sample ACORD 27', '27')} disabled={busy}
+            className="w-full text-left p-3 rounded-lg border border-lava-600/30 bg-lava-600/5 hover:bg-lava-600/10 space-y-1">
+            <span className="flex items-center gap-2 text-sm font-medium text-white"><FileText className="w-4 h-4 text-lava-400" /> Generate a sample ACORD 27</span>
+            <span className="block text-xs text-muted-400">Trainers: the ACORD 27 filled with the correct answers, watermarked "Training purposes only". Available for 20 minutes.</span>
+          </button>
         )}
         {messages.map((m, i) => (
           <div key={i} className={m.role === 'user' ? 'flex justify-end' : 'flex gap-2'}>
@@ -271,6 +385,7 @@ export function ChatAssistant() {
               {m.role === 'user'
                 ? <p className="whitespace-pre-wrap">{m.text}</p>
                 : m.text ? <Markdown text={m.text} /> : <Loader2 className="w-4 h-4 animate-spin text-muted-400" />}
+              {m.sample && <SampleCard sample={m.sample} expired={m.expired} onExpire={expireSample} />}
             </div>
           </div>
         ))}
@@ -280,6 +395,12 @@ export function ChatAssistant() {
 
       <div className="border-t border-line-subtle p-3 space-y-2">
         {error && <div className="text-xs text-lava-300">{error}</div>}
+        {isStaff && messages.length > 0 && (
+          <button onClick={() => makeSample('Generate a sample ACORD 27', '27')} disabled={busy}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-lava-600/30 text-[11px] text-slate-300 hover:bg-lava-600/10">
+            <FileText className="w-3.5 h-3.5 text-lava-400" /> Sample ACORD 27
+          </button>
+        )}
         {pending.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {pending.map((img, i) => (

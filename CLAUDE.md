@@ -46,6 +46,10 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
   `Evidence Of Property Ins.pdf` (ACORD 27 2006/07 edition, generic field names like `LOC`, `COVERAGE1`, `CASymbols212`;
   the rules note each printed label). `supabase/knowledge-checks/guides/acord-27-sop.txt` is the written 14-step process
   (from `Acord27-.pdf`); files in `guides/` are fed to the chatbot as `<process_guide>`.
+- Training samples (ACORD 27 only, by owner request): staff click "Generate a sample ACORD 27" (or type "sample ACORD 27")
+  in the ACORD Assistant. `get_training_sample()` (staff-only, allow-list `'27'`) returns answer-key values, using each
+  rule's `sample` text; `src/lib/trainingSamplePdf.ts` fills, flattens and watermarks "TRAINING PURPOSES ONLY" in the
+  browser. Nothing is stored; the blob URL is revoked after 20 minutes. Never let trainees reach these values.
 - Adding a form touches: `AcordId` in `src/types.ts`, the module-id lists in `AppContext.tsx`, `assessmentService.ts` and
   `trainerData.ts`, `src/data/modules.ts`, a migration inserting into `acord_modules`, the rules, and `build-chat-knowledge.mjs`.
 - Use the fillable PDFs `Acord-130-2019.pdf` and `Acord-140.pdf`. Other copies of the 130/140 PDFs are flat (no form fields) and can't be graded.

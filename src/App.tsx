@@ -23,7 +23,7 @@ const isAdminPath = () => /^\/admin\/?$/i.test(window.location.pathname) || wind
 
 function AppContent() {
   const { view, mode } = useApp();
-  const { isStaff, isAdmin } = useAuth();
+  const { isStaff } = useAuth();
 
   let page;
   switch (view) {
@@ -71,8 +71,8 @@ function AppContent() {
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 min-w-0">{page}</div>
-      {/* ACORD Assistant: administrator only for now (the server enforces this too, see api/chat.ts CHAT_ACCESS). */}
-      {isAdmin && <ChatAssistant />}
+      {/* ACORD Assistant: staff only. AI chat access is enforced on the server (api/chat.ts CHAT_ACCESS); training samples work for all staff. */}
+      {isStaff && <ChatAssistant />}
     </div>
   );
 }
