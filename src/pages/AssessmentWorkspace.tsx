@@ -150,8 +150,8 @@ export function AssessmentWorkspace() {
     return (
       <div>
         <Topbar title="Assessment not available" />
-        <div className="px-8 py-12 text-center text-muted-400">
-          No active assessment. Return to the module and click Generate Form and Scenario to start one.
+        <div className="px-4 sm:px-8 py-12 text-center text-muted-400">
+          No active assessment. Go back to the course and click "Start the form" in Step 3.
           {activeModuleId && <div className="mt-4"><button className="btn-secondary" onClick={() => openModule(activeModuleId)}>Back to module</button></div>}
         </div>
       </div>

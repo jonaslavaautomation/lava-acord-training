@@ -19,18 +19,19 @@ import {
   Paperclip,
   Download,
   FileCheck2,
-  ClipboardCheck,
+  ChevronDown,
 } from 'lucide-react';
 import { useApp } from '../AppContext';
 import { useAuth } from '../context/AuthContext';
 import { MODULE_MAP } from '../data/modules';
 import { Topbar } from '../components/Topbar';
-import { Badge, SectionTitle } from '../components/ui';
+import { Badge, SectionTitle, StepTracker } from '../components/ui';
+import type { CourseSteps } from '../lib/nextStep';
 import { TrainingVideoPlayer } from '../components/TrainingVideoPlayer';
 import { KnowledgeCheck, type KnowledgeCheckGate } from '../components/KnowledgeCheck';
 import { getSignedUrl } from '../lib/materialsService';
 import { formatFileSize } from '../lib/pdf';
-import { friendlyError, type VideoHeartbeatResult } from '../lib/assessmentService';
+import { friendlyError, modulePassed, type VideoHeartbeatResult } from '../lib/assessmentService';
 import { supabase } from '../lib/supabase';
 import type { TrainingMaterial } from '../types';
 
@@ -62,7 +63,7 @@ export function ModulePage() {
     return (
       <div>
         <Topbar title="Module not found" />
-        <div className="px-8 py-12 text-center text-muted-400">Please select a module from the training list.</div>
+        <div className="px-4 sm:px-8 py-12 text-center text-muted-400">Please select a module from the training list.</div>
       </div>
     );
   }
@@ -100,10 +101,23 @@ export function ModulePage() {
         ? 'The fillable ACORD PDF for this module has not been uploaded yet.'
         : 'No attempts remaining. Contact your trainer to reset.';
 
+  const passed = modulePassed(progress);
+  const quizDone = kcGate === 'passed' || kcGate === 'unavailable' || passed;
+  const steps: CourseSteps = {
+    video: videoComplete ? 'done' : 'current',
+    quiz: quizDone ? 'done' : videoComplete ? 'current' : 'todo',
+    form: passed ? 'done' : videoComplete && quizDone ? 'current' : 'todo',
+  };
+  const started = progress.videoProgress > 0 || progress.attemptsUsed > 0;
+  const jumpTo = (key: keyof CourseSteps) => {
+    const id = key === 'video' ? 'step-video' : key === 'quiz' ? 'knowledge-check' : 'step-form';
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div>
       <Topbar title={`${mod.formNumber} — ${mod.title}`} subtitle={mod.category} />
-      <div className="px-8 py-6 space-y-8 max-w-[1100px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-8 max-w-[1100px]">
         <button
           onClick={() => navigate('training')}
           className="flex items-center gap-2 text-sm text-muted-400 hover:text-white transition-colors"
@@ -111,41 +125,29 @@ export function ModulePage() {
           <ArrowLeft className="w-4 h-4" /> Back to ACORD Training
         </button>
 
-        {/* Status bar */}
-        <div className="card p-4 flex items-center justify-between flex-wrap gap-4 animate-fade-in">
-          <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2">
-              {videoComplete ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <PlayCircle className="w-4 h-4 text-muted-500" />}
-              <span className="text-sm text-muted-400">Video: <span className={videoComplete ? 'text-emerald-400' : 'text-slate-200'}>{videoComplete ? 'Complete' : 'Pending'}</span></span>
-            </div>
-            <div className="flex items-center gap-2">
-              {kcGate === 'passed' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <ClipboardCheck className="w-4 h-4 text-muted-500" />}
-              <span className="text-sm text-muted-400">Knowledge Check: <span className={kcGate === 'passed' ? 'text-emerald-400' : 'text-slate-200'}>{kcGate === 'passed' ? 'Passed' : kcGate === 'unavailable' ? '—' : 'Pending'}</span></span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-muted-500" />
-              <span className="text-sm text-muted-400">Best score: <span className="text-slate-200">{progress.bestScore !== null ? `${progress.bestScore}%` : '—'}</span></span>
-            </div>
-            <div className="flex items-center gap-2">
-              <RotateCcw className="w-4 h-4 text-muted-500" />
-              <span className="text-sm text-muted-400">Attempts: <span className="text-slate-200">{progress.attemptsRemaining} remaining</span></span>
-            </div>
+        {/* Steps */}
+        <div className="card p-4 sm:p-5 space-y-4 animate-fade-in">
+          <StepTracker steps={steps} onStepClick={jumpTo} />
+          <div className="flex items-center gap-x-5 gap-y-2 flex-wrap pt-3 border-t border-line-subtle text-xs text-muted-400">
+            <span className="flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> Best score: <span className={passed ? 'text-emerald-400 font-medium' : 'text-slate-200'}>{progress.bestScore !== null ? `${progress.bestScore}%` : '—'}</span> <span className="text-muted-600">(80% to pass)</span></span>
+            <span className="flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5" /> Form attempts left: <span className="text-slate-200">{progress.attemptsRemaining} of {progress.attemptsUsed + progress.attemptsRemaining}</span></span>
+            {passed && <Badge variant="success"><CheckCircle className="w-3 h-3" /> Course passed</Badge>}
           </div>
-          {progress.attemptsUsed > 0 && (
-            <Badge variant={progress.bestScore! >= 80 ? 'success' : 'warning'}>
-              {progress.attemptsUsed} attempt{progress.attemptsUsed > 1 ? 's' : ''} used
-            </Badge>
-          )}
         </div>
 
         {/* Section A: Introduction */}
-        <section className="animate-fade-in">
-          <SectionTitle
-            title="Form Introduction"
-            subtitle={`ACORD ${mod.id} · Edition 2016+`}
-            action={<Badge variant="lava"><BookOpen className="w-3 h-3" /> Section A</Badge>}
-          />
-          <div className="card p-6 space-y-5">
+        <details className="group/intro card animate-fade-in" open={!started}>
+          <summary className="flex items-center gap-3 p-4 sm:p-5 cursor-pointer list-none select-none rounded-xl hover:bg-bg-hover/40 [&::-webkit-details-marker]:hidden">
+            <div className="w-9 h-9 rounded-lg bg-lava-600/10 border border-lava-600/20 flex items-center justify-center shrink-0">
+              <BookOpen className="w-4 h-4 text-lava-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-white">About the {mod.formNumber}</div>
+              <div className="text-xs text-muted-400">What the form is for, its key sections and what you'll learn</div>
+            </div>
+            <ChevronDown className="w-4 h-4 text-muted-400 transition-transform group-open/intro:rotate-180" />
+          </summary>
+          <div className="px-4 sm:px-6 pb-6 pt-1 space-y-5">
             <div className="flex items-start gap-4 pb-5 border-b border-line-subtle">
               <div className="w-14 h-14 rounded-xl bg-lava-600/10 border border-lava-600/20 flex items-center justify-center shrink-0">
                 <FileText className="w-7 h-7 text-lava-400" />
@@ -202,16 +204,16 @@ export function ModulePage() {
               </ul>
             </div>
           </div>
-        </section>
+        </details>
 
-        {/* Section B: Training Video */}
-        <section className="animate-fade-in">
+        {/* Step 1: Training Video */}
+        <section id="step-video" className="animate-fade-in scroll-mt-24">
           <SectionTitle
-            title="Training Video"
+            title="Step 1 · Watch the training video"
             subtitle={activeLesson ? (activeLesson.title || mod.videoTitle) : mod.videoTitle}
-            action={<Badge variant="info"><PlayCircle className="w-3 h-3" /> Section B</Badge>}
+            action={videoComplete ? <Badge variant="success"><CheckCircle className="w-3 h-3" /> Done</Badge> : undefined}
           />
-          <div className="card p-6 space-y-4">
+          <div className="card p-4 sm:p-6 space-y-4">
             {materialsLoading && (
               <div className="aspect-video rounded-lg bg-bg-base border border-line-subtle flex items-center justify-center">
                 <div className="text-center">
@@ -298,26 +300,26 @@ export function ModulePage() {
           </div>
         </section>
 
-        {/* Section C: Knowledge Check */}
+        {/* Step 2: Knowledge Check */}
         {kcGate !== 'unavailable' && (
-          <section id="knowledge-check" className="animate-fade-in">
+          <section id="knowledge-check" className="animate-fade-in scroll-mt-24">
             <SectionTitle
-              title="Knowledge Check"
-              subtitle="Answer questions about the training video before the hands-on assessment"
-              action={<Badge variant="info"><ClipboardCheck className="w-3 h-3" /> Section C</Badge>}
+              title="Step 2 · Knowledge Check"
+              subtitle="15 questions about the video. Score 80% or higher to unlock the form."
+              action={kcGate === 'passed' ? <Badge variant="success"><CheckCircle className="w-3 h-3" /> Passed</Badge> : !videoComplete ? <Badge variant="default"><Lock className="w-3 h-3" /> Finish the video first</Badge> : undefined}
             />
             <KnowledgeCheck moduleId={mod.id} formNumber={mod.formNumber} videoComplete={videoComplete} onGateChange={setKcGate} />
           </section>
         )}
 
-        {/* Section D: Start Assessment */}
-        <section className="animate-fade-in">
+        {/* Step 3: Assessment */}
+        <section id="step-form" className="animate-fade-in scroll-mt-24">
           <SectionTitle
-            title="Assessment"
-            subtitle="Generate a realistic scenario and complete the actual fillable ACORD PDF"
-            action={<Badge variant="lava"><Sparkles className="w-3 h-3" /> Section D</Badge>}
+            title="Step 3 · Fill out the ACORD form"
+            subtitle="Read the agency email and complete the real fillable ACORD PDF. 80% to pass."
+            action={passed ? <Badge variant="success"><CheckCircle className="w-3 h-3" /> Passed</Badge> : undefined}
           />
-          <div className={`card p-6 relative overflow-hidden ${canGenerate ? 'border-lava-600/30' : ''}`}>
+          <div className={`card p-4 sm:p-6 relative overflow-hidden ${canGenerate ? 'border-lava-600/30' : ''}`}>
             {canGenerate && <div className="absolute top-0 right-0 w-48 h-48 bg-lava-600/8 rounded-full blur-3xl" />}
             <div className="relative flex items-center justify-between flex-wrap gap-6">
               <div className="flex items-center gap-4">
@@ -325,7 +327,7 @@ export function ModulePage() {
                   {canGenerate ? <Sparkles className="w-7 h-7 text-lava-400" /> : <Lock className="w-7 h-7 text-muted-600" />}
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-white">Generate Form and Scenario</h3>
+                  <h3 className="text-base font-semibold text-white">{canGenerate ? (hasInProgress ? 'Your form is waiting' : 'Ready for the form') : 'Form locked'}</h3>
                   <p className="text-sm text-muted-400 mt-0.5 max-w-md">
                     {canGenerate
                       ? hasInProgress
@@ -344,7 +346,7 @@ export function ModulePage() {
                 {starting ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Preparing…</>
                 ) : canGenerate ? (
-                  <><Sparkles className="w-4 h-4" /> {hasInProgress ? 'Resume Assessment' : 'Generate Form and Scenario'}</>
+                  <><Sparkles className="w-4 h-4" /> {hasInProgress ? 'Resume form' : progress.attemptsUsed > 0 ? 'Retake form' : 'Start the form'}</>
                 ) : (
                   <><Lock className="w-4 h-4" /> Locked</>
                 )}

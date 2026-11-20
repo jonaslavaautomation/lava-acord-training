@@ -40,7 +40,7 @@ export function UserManagement() {
   return (
     <div>
       <Topbar title="Users & Roles" subtitle="Trainees, trainers and administrators" />
-      <div className="px-8 py-6 space-y-5 max-w-[1200px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-5 max-w-[1200px]">
         <div className="card p-4 flex items-start gap-3 border-cyan-500/15 bg-cyan-500/5">
           <Shield className="w-5 h-5 text-cyan-400 mt-0.5 shrink-0" />
           <p className="text-xs text-muted-400 leading-relaxed">

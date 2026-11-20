@@ -10,7 +10,9 @@ import {
   FolderUp,
   LogOut,
   UserCog,
+  X,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useApp } from '../AppContext';
 import { BrandLockup } from './BrandLockup';
 import { useAuth } from '../context/AuthContext';
@@ -38,8 +40,21 @@ const trainerNav: NavEntry[] = [
   { id: 'training', label: 'ACORD Training', icon: GraduationCap },
 ];
 
+/** The Topbar's menu button (small screens) opens the sidebar by sending this event. */
+export const OPEN_NAV_EVENT = 'lava:open-nav';
+
 export function Sidebar() {
-  const { view, navigate, mode, setMode, student } = useApp();
+  const { view, navigate: go, mode, setMode, student } = useApp();
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const show = () => setOpen(true);
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener(OPEN_NAV_EVENT, show);
+    window.addEventListener('keydown', esc);
+    return () => { window.removeEventListener(OPEN_NAV_EVENT, show); window.removeEventListener('keydown', esc); };
+  }, []);
+  // On small screens the menu closes after choosing a page.
+  const navigate = (v: View) => { setOpen(false); go(v); };
   const { isStaff, isTrainee, signOut } = useAuth();
   const exit = () => {
     if (isTrainee && !confirm('Exit training?\n\nYou have no password, so after exiting you will start over as a new trainee. To keep your progress, just close the tab instead and come back on this same browser.')) return;
@@ -49,10 +64,23 @@ export function Sidebar() {
   const isActive = (id: View) => view === id || (id === 'training' && (view === 'module' || view === 'assessment' || view === 'results'));
 
   return (
-    <aside className="w-64 shrink-0 h-screen sticky top-0 border-r border-line-subtle bg-bg-surface/50 backdrop-blur-xl flex flex-col">
-      <div className="px-5 py-5 border-b border-line-subtle">
-        <BrandLockup size="sm" />
-        <div className="text-[10px] text-muted-500 uppercase tracking-wider leading-tight mt-2.5">ACORD Training Simulator</div>
+    <>
+    {open && <div className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setOpen(false)} aria-hidden="true" />}
+    <aside
+      className={`w-64 shrink-0 h-screen flex flex-col border-r border-line-subtle
+        fixed inset-y-0 left-0 z-50 bg-bg-surface transition-transform duration-200 ease-out
+        lg:sticky lg:top-0 lg:z-auto lg:translate-x-0 lg:bg-bg-surface/50 lg:backdrop-blur-xl
+        ${open ? 'translate-x-0 shadow-elevated' : '-translate-x-full'}`}
+      aria-label="Main menu"
+    >
+      <div className="px-5 py-5 border-b border-line-subtle flex items-start justify-between gap-2">
+        <div>
+          <BrandLockup size="sm" />
+          <div className="text-[10px] text-muted-500 uppercase tracking-wider leading-tight mt-2.5">ACORD Training Simulator</div>
+        </div>
+        <button onClick={() => setOpen(false)} className="lg:hidden -mr-2 p-2 rounded-lg text-muted-400 hover:text-white hover:bg-bg-hover" aria-label="Close menu">
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
@@ -66,8 +94,10 @@ export function Sidebar() {
             <button
               key={entry.id}
               onClick={() => navigate(entry.id)}
-              className={`nav-item w-full ${active ? 'nav-item-active' : ''}`}
+              className={`nav-item w-full relative ${active ? 'nav-item-active' : ''}`}
+              aria-current={active ? 'page' : undefined}
             >
+              {active && <span className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full bg-lava-500" />}
               <Icon className={`w-[18px] h-[18px] ${active ? 'text-lava-400' : ''}`} strokeWidth={2} />
               <span className="flex-1 text-left">{entry.label}</span>
               {active && <ChevronRight className="w-4 h-4 text-muted-500" />}
@@ -78,7 +108,7 @@ export function Sidebar() {
         {mode === 'student' && isStaff && (
           <div className="pt-4">
             <button
-              onClick={() => setMode('trainer')}
+              onClick={() => { setOpen(false); setMode('trainer'); }}
               className="nav-item w-full text-cyan-400/80 hover:text-cyan-400"
             >
               <Users className="w-[18px] h-[18px]" strokeWidth={2} />
@@ -89,7 +119,7 @@ export function Sidebar() {
         {mode === 'trainer' && (
           <div className="pt-4">
             <button
-              onClick={() => setMode('student')}
+              onClick={() => { setOpen(false); setMode('student'); }}
               className="nav-item w-full text-muted-400"
             >
               <LayoutDashboard className="w-[18px] h-[18px]" strokeWidth={2} />
@@ -118,5 +148,6 @@ export function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

@@ -21,7 +21,7 @@ export function Settings() {
   return (
     <div>
       <Topbar title="Settings" subtitle="Manage your profile and training preferences" />
-      <div className="px-8 py-6 space-y-6 max-w-[900px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-[900px]">
         {/* Profile */}
         <div className="card p-6 animate-fade-in">
           <div className="flex items-center gap-4 mb-6">

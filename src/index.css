@@ -20,6 +20,21 @@
     background-attachment: fixed;
   }
 
+  /* Keyboard users can always see where they are. */
+  :focus-visible {
+    outline: 2px solid rgba(244, 63, 94, 0.7);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   ::selection {
     @apply bg-lava-600/30 text-white;
   }
@@ -53,7 +68,7 @@
   }
 
   .card {
-    @apply bg-bg-surface border border-line-subtle rounded-xl;
+    @apply bg-bg-surface border border-line-subtle rounded-xl shadow-card;
   }
 
   .card-hover {
@@ -61,11 +76,11 @@
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lava-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
   .btn-primary {
-    @apply btn bg-lava-600 text-white hover:bg-lava-500 active:bg-lava-700 shadow-glow;
+    @apply btn bg-gradient-to-b from-lava-500 to-lava-600 text-white hover:from-lava-400 hover:to-lava-500 active:to-lava-700 shadow-glow;
   }
 
   .btn-secondary {
@@ -105,7 +120,7 @@
   }
 
   .nav-item-active {
-    @apply text-white bg-bg-elevated;
+    @apply text-white bg-bg-elevated shadow-card;
   }
 
   .stat-value {

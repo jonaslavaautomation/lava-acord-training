@@ -33,12 +33,12 @@ export function MyProgress() {
   return (
     <div>
       <Topbar title="My Progress" subtitle="Track your competency across all ACORD forms" />
-      <div className="px-8 py-6 space-y-6 max-w-[1200px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-[1200px]">
         {/* Overall progress hero */}
         <div className="card p-6 relative overflow-hidden animate-fade-in">
           <div className="absolute top-0 right-0 w-64 h-64 bg-lava-600/5 rounded-full blur-3xl" />
           <div className="relative flex items-center gap-8 flex-wrap">
-            <ScoreRing score={overallProgress} size={96} strokeWidth={7} />
+            <ScoreRing score={overallProgress} size={96} strokeWidth={7} kind="progress" />
             <div className="flex-1 min-w-[280px]">
               <h2 className="text-lg font-semibold text-white mb-1">Certification Progress</h2>
               <p className="text-sm text-muted-400 mb-4">

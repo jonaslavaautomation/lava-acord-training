@@ -1,4 +1,57 @@
 import type { ReactNode } from 'react';
+import { Check } from 'lucide-react';
+import type { CourseSteps, StepState } from '../lib/nextStep';
+
+const STEP_LABELS: { key: keyof CourseSteps; label: string; short: string }[] = [
+  { key: 'video', label: 'Watch video', short: 'Video' },
+  { key: 'quiz', label: 'Knowledge Check', short: 'Quiz' },
+  { key: 'form', label: 'Fill the form', short: 'Form' },
+];
+
+/**
+ * Video → Knowledge Check → Form, with each step marked done / current / to do.
+ * `onStepClick` makes the steps buttons (e.g. to jump to that section of the course page).
+ */
+export function StepTracker({ steps, compact = false, onStepClick }: {
+  steps: CourseSteps;
+  compact?: boolean;
+  onStepClick?: (key: keyof CourseSteps) => void;
+}) {
+  return (
+    <ol className="flex items-center w-full" aria-label="Course steps">
+      {STEP_LABELS.map((s, i) => {
+        const state: StepState = steps[s.key];
+        const dot = state === 'done'
+          ? 'bg-emerald-500 text-white border-emerald-500'
+          : state === 'current'
+            ? 'bg-lava-600/15 text-lava-300 border-lava-500 ring-4 ring-lava-600/10'
+            : 'bg-bg-base text-muted-600 border-line';
+        const text = state === 'done' ? 'text-emerald-400' : state === 'current' ? 'text-white' : 'text-muted-500';
+        const Inner = onStepClick ? 'button' : 'span';
+        return (
+          <li key={s.key} className={`flex items-center ${i < STEP_LABELS.length - 1 ? 'flex-1' : ''}`}>
+            <Inner
+              {...(onStepClick ? { type: 'button' as const, onClick: () => onStepClick(s.key) } : {})}
+              className={`flex items-center gap-2 shrink-0 ${onStepClick ? 'rounded-md hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lava-500/60' : ''}`}
+              aria-current={state === 'current' ? 'step' : undefined}
+            >
+              <span className={`${compact ? 'w-5 h-5 text-[10px]' : 'w-7 h-7 text-xs'} rounded-full border-2 flex items-center justify-center font-semibold transition-colors ${dot}`}>
+                {state === 'done' ? <Check className={compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} strokeWidth={3} /> : i + 1}
+              </span>
+              <span className={`${compact ? 'text-[11px]' : 'text-sm'} font-medium ${text}`}>
+                {compact ? s.short : <><span className="sm:hidden">{s.short}</span><span className="hidden sm:inline">{s.label}</span></>}
+                <span className="sr-only">{state === 'done' ? ' (done)' : state === 'current' ? ' (current step)' : ''}</span>
+              </span>
+            </Inner>
+            {i < STEP_LABELS.length - 1 && (
+              <span className={`flex-1 h-0.5 mx-2 rounded-full ${state === 'done' ? 'bg-emerald-500/50' : 'bg-line'}`} />
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
 
 interface ProgressBarProps {
   value: number;
@@ -80,13 +133,17 @@ interface ScoreRingProps {
   score: number;
   size?: number;
   strokeWidth?: number;
+  /** 'progress' shows how far along something is (cyan, green at 100%) instead of grading it (green/amber/red). */
+  kind?: 'score' | 'progress';
 }
 
-export function ScoreRing({ score, size = 64, strokeWidth = 5 }: ScoreRingProps) {
+export function ScoreRing({ score, size = 64, strokeWidth = 5, kind = 'score' }: ScoreRingProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
-  const color = score >= 80 ? '#10b981' : score >= 60 ? '#f59e0b' : '#e11d48';
+  const color = kind === 'progress'
+    ? (score >= 100 ? '#10b981' : '#22d3ee')
+    : score >= 80 ? '#10b981' : score >= 60 ? '#f59e0b' : '#e11d48';
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
@@ -105,7 +162,7 @@ export function ScoreRing({ score, size = 64, strokeWidth = 5 }: ScoreRingProps)
         />
       </svg>
       <span className="absolute text-sm font-semibold" style={{ color }}>
-        {score}
+        {score}{kind === 'progress' && <span className="text-[0.7em]">%</span>}
       </span>
     </div>
   );

@@ -24,7 +24,7 @@ export function MyAssessments() {
   return (
     <div>
       <Topbar title="My Assessments" subtitle="All your ACORD form assessment attempts" />
-      <div className="px-8 py-6 space-y-6 max-w-[1200px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-[1200px]">
         {/* Summary */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="card p-5">

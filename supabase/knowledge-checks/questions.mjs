@@ -308,8 +308,60 @@ export const QUESTIONS = {
       answer: 1, why: 'A name must be in the signature box for the certificate to be authorized and accepted.' },
   ],
 
-  // ------------------------------------------------------------------ ACORD 25 — video "COI recording.mp4" (LAVA training call, Taglish)
+  // ------------------------------------------------------------------ ACORD 25 — video "Ac0rd-25.mp4" (Elevated Success, 4:59, English)
+  // Trainees watch this video, so the questions come from it. (The LAVA COI training call, "COI recording.mp4", is given to
+  // the assistant as background in guides/; its old questions, keys v_*, are below as ACORD25_LAVA_CALL and not used.)
   '25': [
+    { key: 'e_coi_name', at: '00:09', q: 'What is the ACORD 25 also called?',
+      options: ['Evidence of Property Insurance', 'The Certificate of Liability Insurance, or COI', 'The Commercial Insurance Application', 'The Workers Compensation Application'],
+      answer: 1, why: 'The video covers the certificate of liability insurance, sometimes called the COI, also an ACORD 25.' },
+    { key: 'e_producer', at: '00:23', q: 'What goes on the left side at the top (the Producer area)?',
+      options: ['Your agency name and address', 'The certificate holder', 'The insurance carrier\'s address', 'The insured\'s employees'],
+      answer: 0, why: 'On the left side you put your agency information: your agency name and address.' },
+    { key: 'e_insured', at: '00:28', q: 'What name goes in the INSURED box?',
+      options: ['The person who asked for the certificate', 'The property manager', 'The agent\'s name', 'The insured\'s legal entity name that matches the policy, with the address'],
+      answer: 3, why: 'Use the insured legal entity that matches the policy, along with the address.' },
+    { key: 'e_contact', at: '00:37', q: 'Besides the agency name and address, what contact details does the video say to fill in?',
+      options: ['The insured\'s social security number', 'The carrier\'s claims hotline only', 'The contact person at the office, with phone number, fax number and email', 'Nothing else'],
+      answer: 2, why: 'Add your contact person for the office, with the phone number, fax number and email address.' },
+    { key: 'e_insurers', at: '00:47', q: 'What do you list under INSURERS AFFORDING COVERAGE?',
+      options: ['All the insurers for these policies (Insurer A, B, C...), each with its NAIC number', 'Only the largest insurer', 'The certificate holder\'s insurers', 'The insurers that declined the risk'],
+      answer: 0, why: 'List all the different insurers for these policies (A, B, C) and make sure each has the right NAIC number.' },
+    { key: 'e_cert_number', at: '01:07', q: 'How does the video fill in the certificate number and revision number?',
+      options: ['Copy the policy number', 'Certificate number 1, and if there is a revision, which revision number it is', 'Always leave both blank', 'Use today\'s date'],
+      answer: 1, why: 'She lists it as certificate number one, and if there is a revision, which number revision it is.' },
+    { key: 'e_insr_ltr', at: '01:19', q: 'What does the INSR LTR (insurer letter) next to each policy tell you?',
+      options: ['The policy\'s grade', 'Whether the policy is paid', 'The state code', 'Which insurer from the Insurers Affording Coverage list is insuring that policy'],
+      answer: 3, why: 'The insurer letter has to match the insurer company insuring that policy (e.g. general liability with Travelers = A).' },
+    { key: 'e_gl_aggregate', at: '01:41', q: 'For General Liability, which two choices must you mark?',
+      options: ['Cash or credit', 'New or renewal', 'Claims-made or occurrence, and whether the general aggregate applies per policy, per project or per location', 'Owner or tenant'],
+      answer: 2, why: 'List whether it is claims-made or occurrence, and how the general aggregate limit applies: per policy, project or location.' },
+    { key: 'e_addl_wvd', at: '01:52', q: 'If there is an additional insured or a waiver of subrogation on a policy, what do you do?',
+      options: ['Put an X in the ADDL INSD or SUBR WVD column for that policy', 'Write it on a separate page', 'Nothing, it is assumed', 'Call the carrier'],
+      answer: 0, why: 'If there is an additional insured or waiver of subrogation, put an X in that part.' },
+    { key: 'e_auto', at: '02:21', q: 'In the example, which auto box is checked and what limit is shown?',
+      options: ['Hired autos only, $500,000 bodily injury', 'Any Auto, with a $1,000,000 combined single limit', 'Owned autos only, no limit', 'Scheduled autos, $2,000,000 aggregate'],
+      answer: 1, why: 'She chose Any Auto coverage and used a combined single limit of $1 million.' },
+    { key: 'e_excess', at: '02:45', q: 'If the policy is EXCESS liability (not umbrella), what else do you do?',
+      options: ['Nothing different', 'Leave the limits blank', 'Put it under General Liability', 'List which policy it is excess over in the Description of Operations box'],
+      answer: 3, why: 'If it is excess, list which policy it is excess over in the description box.' },
+    { key: 'e_retention', at: '02:59', q: 'Where does a deductible or retention for the umbrella go?',
+      options: ['In the description box only', 'Nowhere, it is not shown', 'In the DED / RETENTION box on the umbrella line, with the amount', 'In the certificate holder box'],
+      answer: 2, why: 'If you have a deductible or retention, list that amount in that box.' },
+    { key: 'e_wc_excluded', at: '03:25', q: 'On Workers Compensation, if a member (e.g. the owner) is excluded, what do you do?',
+      options: ['Mark "Y" and describe it in the Description of Operations (e.g. "Excluded on work comp: John Smith, owner")', 'Leave it as "N"', 'Remove the workers comp line', 'Write it on the back of the form'],
+      answer: 0, why: 'If you have an excluded member, click yes and describe it below, like "excluded on work comp, John Smith, the owner." (She notes it is mandatory in New Hampshire.)' },
+    { key: 'e_wc_waiver_only', at: '03:41', q: 'What can Workers Compensation have on the certificate?',
+      options: ['Only additional insured', 'Only a waiver of subrogation, never additional insured', 'Both additional insured and waiver of subrogation', 'Neither'],
+      answer: 1, why: 'On workers comp you can only do a waiver of subrogation; you cannot have an additional insured.' },
+    { key: 'e_holder_language', at: '04:23', q: 'A certificate holder asks for specific wording on the COI. What must you check?',
+      options: ['Nothing, always type what they ask', 'That the wording is short', 'That what they ask for is actually covered on the policy', 'That the holder is in the same state'],
+      answer: 2, why: 'Most certificate holders want some language; make sure whatever they ask for is actually covered on that policy.' },
+  ],
+};
+
+/** Not used: the ACORD 25 questions from the LAVA COI training call (kept in case that video is uploaded instead). */
+export const ACORD25_LAVA_CALL = [
     { key: 'v_coi_is', at: '04:43', q: 'According to the training, what is a COI (Certificate of Liability Insurance)?',
       options: ['A quote for a new policy', 'Proof that the business has insurance', 'A claim report', 'A bill for the premium'],
       answer: 1, why: 'The trainer explains that the COI is proof that you have insurance.' },
@@ -355,5 +407,4 @@ export const QUESTIONS = {
     { key: 'v_cert_number', at: '22:21', q: 'If you need more than one certificate (for example many auto policies), what must you always add?',
       options: ['A second signature', 'The certificate number (1, 2 ...) on each certificate', 'A new insured name', 'Nothing, just staple them'],
       answer: 1, why: 'Always make sure you add the certificate number; with more than one certificate, number them 1, 2 and so on.' },
-  ],
-};
+];

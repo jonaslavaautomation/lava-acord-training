@@ -427,7 +427,7 @@ export const MODULE_25: AcordModule = {
   category: 'Liability',
   videoTitle: 'ACORD 25 — Certificate of Insurance (COI) Requests',
   videoDescription: 'Process a COI request: check the policies, add the certificate holder, mark additional insured and waiver of subrogation, then issue the ACORD 25.',
-  videoDuration: '25:02',
+  videoDuration: '4:59',
   introduction: {
     purpose: 'The ACORD 25 (Certificate of Liability Insurance, or COI) shows a certificate holder, such as a general contractor, landlord or licensing board, which liability policies the insured has: the insurers, policy numbers, policy periods and limits for General Liability, Auto, Umbrella/Excess and Workers Compensation. It is for information only and does not change the policies.',
     agencyRole: 'Account managers and VAs issue COIs every day when a client or a client\'s customer asks for proof of coverage. Every policy shown must be current, the certificate holder\'s name and address must be exact, and Additional Insured (ADDL INSD) and Waiver of Subrogation (SUBR WVD) may only be marked when the policy provides them.',

@@ -52,7 +52,7 @@ export function TrainingHistory() {
   return (
     <div>
       <Topbar title="Training History" subtitle="Complete timeline of your learning journey" />
-      <div className="px-8 py-6 space-y-6 max-w-[1000px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-[1000px]">
         <div className="card p-5 flex items-center gap-4 animate-fade-in">
           <div className="w-12 h-12 rounded-lg bg-lava-600/10 border border-lava-600/20 flex items-center justify-center">
             <History className="w-6 h-6 text-lava-400" />

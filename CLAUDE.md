@@ -46,8 +46,10 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
   `Evidence Of Property Ins.pdf` (ACORD 27 2006/07 edition, generic field names like `LOC`, `COVERAGE1`, `CASymbols212`;
   the rules note each printed label). `supabase/knowledge-checks/guides/acord-27-sop.txt` is the written 14-step process
   (from `Acord27-.pdf`); files in `guides/` are fed to the chatbot as `<process_guide>`.
-- ACORD 25 (Certificate of Liability Insurance / COI): video "COI recording.mp4" (25:02, HawkSoft COI walkthrough; the
-  uploaded copy is compressed under 50 MB), fillable PDF "ACORD 25 Certificate of Liability Insurance.pdf" (ACORD 25 2016/03,
+- ACORD 25 (Certificate of Liability Insurance / COI): the uploaded trainee video is "Ac0rd-25.mp4" (4:59, Elevated Success,
+  English, third-party); the Knowledge Check comes from it (`transcripts/acord-25.txt`). The LAVA internal call "COI recording.mp4"
+  (25:02, Taglish) is assistant background only (`guides/acord-25-lava-coi-training-call.txt`; its unused questions are
+  `ACORD25_LAVA_CALL` in questions.mjs). Fillable PDF "ACORD 25 Certificate of Liability Insurance.pdf" (ACORD 25 2016/03,
   standard field names). The original download was encrypted (pdf-lib can't fill encrypted PDFs), so the uploaded copy was
   decrypted with pypdf; always upload an unencrypted PDF. `guides/acord-25-coi-sop.txt` is the 13-step HawkSoft COI SOP
   (from "COI Request Processing SOP.pdf", image-only). Scenario: Cascade Electric & Lighting / Westfield Development Group.

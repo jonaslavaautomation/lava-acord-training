@@ -42,7 +42,7 @@ export function TrainerDashboard() {
   return (
     <div>
       <Topbar title="Trainer Dashboard" subtitle="Monitor student performance and assessment activity" />
-      <div className="px-8 py-6 space-y-6 max-w-[1400px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-[1400px]">
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard label="Total Students" value={totalStudents} icon={<Users className="w-5 h-5" />} accent="lava" />

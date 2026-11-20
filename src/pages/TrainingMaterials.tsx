@@ -190,7 +190,7 @@ export function TrainingMaterials() {
   return (
     <div>
       <Topbar title="Training Materials" subtitle="Upload and manage training videos, fillable ACORD PDFs and supporting materials" />
-      <div className="px-8 py-6 space-y-6 max-w-[1200px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-[1200px]">
         {/* Info banner */}
         <div className="card p-4 flex items-start gap-3 border-cyan-500/15 bg-cyan-500/5 animate-fade-in">
           <Info className="w-5 h-5 text-cyan-400 mt-0.5 shrink-0" />

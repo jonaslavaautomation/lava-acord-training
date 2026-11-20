@@ -33,7 +33,7 @@ export function Results() {
     return (
       <div>
         <Topbar title="No results available" />
-        <div className="px-8 py-12 text-center text-muted-400">No assessment results to display.</div>
+        <div className="px-4 sm:px-8 py-12 text-center text-muted-400">No assessment results to display.</div>
       </div>
     );
   }
@@ -84,7 +84,7 @@ export function Results() {
   return (
     <div>
       <Topbar title="Assessment Results" subtitle={`${mod.formNumber} — ${mod.title}`} />
-      <div className="px-8 py-6 space-y-6 max-w-[1100px]">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6 max-w-[1100px]">
         <button onClick={() => navigate('module')} className="flex items-center gap-2 text-sm text-muted-400 hover:text-white transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Module
         </button>
