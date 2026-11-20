@@ -12,7 +12,7 @@ import type {
 
 export const MAX_ATTEMPTS = 3;
 export const PASS_SCORE = 80;
-const MODULE_IDS: AcordId[] = ['125', '126', '127', '130', '140', '27'];
+const MODULE_IDS: AcordId[] = ['125', '126', '127', '130', '140', '27', '25'];
 
 const ERROR_MESSAGES: Record<string, string> = {
   NOT_AUTHENTICATED: 'Your session has expired. Please sign in again.',
@@ -245,6 +245,21 @@ export function buildModuleProgress(
     attempts,
     videos: vids,
   };
+}
+
+/** True once the trainee has a submitted attempt at or above the pass mark. */
+export function modulePassed(p: ModuleProgress): boolean {
+  return p.bestScore !== null && p.bestScore >= PASS_SCORE;
+}
+
+/**
+ * Course progress shown to the trainee. A passed course is always 100%, even if the video tracker missed part of the
+ * video. Otherwise: video 70%, a submitted attempt the rest.
+ */
+export function moduleProgressPct(p: ModuleProgress): number {
+  if (modulePassed(p) || p.status === 'completed') return 100;
+  if (p.videoCompleted) return p.bestScore !== null ? 90 : 70;
+  return Math.round(p.videoProgress * 0.7);
 }
 
 function initials(name: string): string {

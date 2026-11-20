@@ -1,0 +1,42 @@
+# ACORD 25 — Certificate of Insurance (COI) Request Procedure (from "COI Request Processing SOP.pdf"). Text only; the PDF's screenshots are HawkSoft screens with client details blacked out.
+Standard Operating Procedure & Step-by-Step Workflow Guide
+Certificate of Insurance (COI) Request Procedure — ACORD 25 Certificate of Liability Insurance, issued from HawkSoft.
+
+WHEN TO USE THIS
+When a client (the insured) or a vendor asks for a Certificate of Insurance (COI) showing their liability coverage
+for a certificate holder (for example a general contractor, landlord, or a state licensing board).
+
+STEPS
+1 Open the Client File. Make a note depending on the type of COI requested.
+  (The client's Logs tab shows earlier activity, e.g. "Email > To > Other > Print Or Create: Certificate of Liability (025)" tagged "Issued COI".)
+2 Go to Action - Email - To-Insured. Paste the content of the email request received.
+  (This opens Create Log; the activity tag used is "Issued COI".)
+3 In the same log notes, go to New Action - Mail/Email - To-Insured - Print Create.
+4 Continue the same process and select Certificate of Liability (ACORD 25).
+  (The Print/Create list also offers Evidence of Property (27), Certificate of Property (24), Vehicle Certificate, ACORD Forms, etc.)
+5 Double click on the Master Certificate List to see the rest of the options.
+6 Check each tab to see that the policies are not outdated or expired.
+  (Tabs: Terms, Producer & Insured, General Liability, Automobile Liability, Excess Liability, Workers Comp Liability,
+  Other 1, Other 2, Description of Operations Template, Document Library, Certificate Holder. The Terms tab shows the
+  form edition, ACORD 25 (2016/03).)
+7 Go to Certificate Holder and search for the name of the vendor / certificate holder. If not available, click Add to fill out the details.
+8 Double check the address, city, state, and zip code of the certificate holder.
+9 Click the box and add the specific Description of Operations based on how the client likes to format the template.
+  If included, all boxes can be checked too (Include Vehicle Schedule / Driver List / Location List on ACORD 101;
+  Additional Remarks use the ACORD 101 Additional Remarks Schedule).
+10 Click on the specific policy (section) requested by the certificate holder: General Liability, Automobile Liability,
+  Excess Liability, Workers Comp Liability, Other 1, Other 2. If there is an Additional Insured, check that box;
+  the same goes for Subrogation Waived.
+11 After clicking OK, the screen goes back to the main page. Click OK and the print option shows up
+  ("Print, Email or Attach Certificate(s)?"). Click Yes.
+12 The screen automatically selects/checks the Certificate Holder. Click OK.
+13 Select Email or Print to send the Certificate of Insurance. Click Print Preview to see how the certificate will look.
+  Make sure to select the Signature of Agent. Click Finish.
+  Note: after clicking Finish, make sure to log notes.
+
+KEY CHECKS
+- Never issue a certificate with an expired or outdated policy: check every tab first (step 6).
+- The certificate holder's name and full address must be correct (steps 7-8).
+- Only mark ADDL INSD (Additional Insured) and SUBR WVD (Subrogation Waived) when the policy actually provides it
+  and the holder requested it (step 10).
+- Always select the agent's signature (step 13) and log the activity afterwards.

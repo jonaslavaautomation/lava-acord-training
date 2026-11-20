@@ -6,7 +6,6 @@ import {
   ArrowRight,
   PlayCircle,
   CheckCircle,
-  AlertCircle,
   RotateCcw,
   FileText,
 } from 'lucide-react';
@@ -14,6 +13,8 @@ import { useApp } from '../AppContext';
 import { ACORD_MODULES } from '../data/modules';
 import { Topbar } from '../components/Topbar';
 import { StatCard, ProgressBar, Badge, ScoreRing, SectionTitle } from '../components/ui';
+import { ModuleStatusBadge } from '../components/ModuleStatusBadge';
+import { moduleProgressPct } from '../lib/assessmentService';
 import type { AcordId } from '../types';
 
 export function Dashboard() {
@@ -21,15 +22,7 @@ export function Dashboard() {
   const progress = student.progress;
 
   const overallProgress = Math.round(
-    (Object.values(progress).reduce((acc, p) => {
-      let moduleScore = 0;
-      if (p.videoCompleted) moduleScore += 30;
-      if (p.status === 'completed') moduleScore += 40;
-      if (p.bestScore !== null) moduleScore += (p.bestScore / 100) * 30;
-      return acc + moduleScore;
-    }, 0) /
-      (ACORD_MODULES.length * 100)) *
-      100,
+    Object.values(progress).reduce((acc, p) => acc + moduleProgressPct(p), 0) / ACORD_MODULES.length,
   );
 
   const completed = Object.values(progress).filter((p) => p.status === 'completed').length;
@@ -89,7 +82,7 @@ export function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {ACORD_MODULES.map((mod) => {
               const p = progress[mod.id];
-              const moduleProgress = p.videoCompleted ? (p.bestScore !== null ? 100 : 70) : Math.round(p.videoProgress * 0.7);
+              const moduleProgress = moduleProgressPct(p);
               return (
                 <div key={mod.id} className="card-hover p-5 flex flex-col animate-fade-in group">
                   <div className="flex items-start justify-between mb-4">
@@ -102,7 +95,7 @@ export function Dashboard() {
                         <div className="text-sm font-semibold text-white">{mod.formNumber}</div>
                       </div>
                     </div>
-                    <StatusBadge status={p.status} />
+                    <ModuleStatusBadge progress={p} />
                   </div>
 
                   <h3 className="text-base font-semibold text-white tracking-tight mb-1">{mod.title}</h3>
@@ -187,8 +180,3 @@ export function Dashboard() {
   );
 }
 
-function StatusBadge({ status }: { status: 'not-started' | 'in-progress' | 'completed' }) {
-  if (status === 'completed') return <Badge variant="success"><CheckCircle className="w-3 h-3" /> Complete</Badge>;
-  if (status === 'in-progress') return <Badge variant="warning"><AlertCircle className="w-3 h-3" /> In Progress</Badge>;
-  return <Badge variant="default"><Clock3 className="w-3 h-3" /> Not Started</Badge>;
-}

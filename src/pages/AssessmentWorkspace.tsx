@@ -214,9 +214,20 @@ export function AssessmentWorkspace() {
             <ProgressBar value={completionPct} size="sm" />
             <span className="text-xs text-muted-400 tabular-nums w-10">{completionPct}%</span>
           </div>
-          <button onClick={() => setShowReview(true)} disabled={!pdf} className="btn-primary py-2">
-            <Eye className="w-4 h-4" /> Review & Submit
-          </button>
+          {showReview && pdf ? (
+            <button
+              onClick={() => { if (window.confirm(`Submit attempt ${attempt.attempt_number} of ${MAX_ATTEMPTS} for grading? This cannot be undone.`)) handleSubmit(); }}
+              disabled={submitting !== null}
+              className="btn-primary py-2"
+            >
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              {submitting === 'grading' ? 'Grading…' : submitting === 'generating' ? 'Saving…' : 'Submit Assessment'}
+            </button>
+          ) : (
+            <button onClick={() => setShowReview(true)} disabled={!pdf} className="btn-primary py-2">
+              <Eye className="w-4 h-4" /> Review & Submit
+            </button>
+          )}
         </div>
       </div>
 
@@ -394,6 +405,37 @@ function ReviewPanel({ fields, isFilled, filledCount, completionPct, onBack, onJ
         </button>
       </div>
 
+      <div className="card p-5 mb-4 border-lava-600/30 sticky top-0 z-10 bg-bg-surface shadow-lg shadow-black/30">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h3 className="text-sm font-semibold text-white">Submit Assessment</h3>
+            <p className="text-xs text-muted-400 mt-0.5">
+              Time elapsed: <span className="text-slate-200 tabular-nums">{elapsedDisplay}</span> ·
+              This uses attempt {attemptNumber} of {MAX_ATTEMPTS} and cannot be undone.
+            </p>
+            <p className="text-[11px] text-muted-500 mt-1 flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> Graded on the server against the trainer's answer key.</p>
+          </div>
+          <button onClick={onSubmit} disabled={submitting !== null} className="btn-primary px-6 py-3">
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            {submitting === 'grading' ? 'Grading…' : submitting === 'generating' ? 'Saving completed PDF…' : 'Submit Assessment'}
+          </button>
+        </div>
+        {submitError && (
+          <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-lava-600/5 border border-lava-600/20">
+            <AlertCircle className="w-4 h-4 text-lava-400 mt-0.5 shrink-0" />
+            <p className="text-xs text-lava-300">{submitError}</p>
+          </div>
+        )}
+        {fields.length - filledCount > 0 && (
+          <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/15">
+            <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+            <p className="text-xs text-amber-400/80">
+              Some fields are empty. Fields the scenario provides information for will count as missing; fields the
+              scenario does not mention should be left blank. Review the scenario email before submitting.
+            </p>
+          </div>
+        )}
+      </div>
       <div className="card p-4 mb-4 flex items-center gap-6">
         <div className="flex-1">
           <div className="flex items-center justify-between text-xs mb-1.5">
@@ -457,37 +499,6 @@ function ReviewPanel({ fields, isFilled, filledCount, completionPct, onBack, onJ
         })}
       </div>
 
-      <div className="card p-5 border-lava-600/20">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h3 className="text-sm font-semibold text-white">Submit Assessment</h3>
-            <p className="text-xs text-muted-400 mt-0.5">
-              Time elapsed: <span className="text-slate-200 tabular-nums">{elapsedDisplay}</span> ·
-              This uses attempt {attemptNumber} of {MAX_ATTEMPTS} and cannot be undone.
-            </p>
-            <p className="text-[11px] text-muted-500 mt-1 flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> Graded on the server against the trainer's answer key.</p>
-          </div>
-          <button onClick={onSubmit} disabled={submitting !== null} className="btn-primary px-6 py-3">
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            {submitting === 'grading' ? 'Grading…' : submitting === 'generating' ? 'Saving completed PDF…' : 'Submit Assessment'}
-          </button>
-        </div>
-        {submitError && (
-          <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-lava-600/5 border border-lava-600/20">
-            <AlertCircle className="w-4 h-4 text-lava-400 mt-0.5 shrink-0" />
-            <p className="text-xs text-lava-300">{submitError}</p>
-          </div>
-        )}
-        {fields.length - filledCount > 0 && (
-          <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/15">
-            <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
-            <p className="text-xs text-amber-400/80">
-              Some fields are empty. Fields the scenario provides information for will count as missing; fields the
-              scenario does not mention should be left blank. Review the scenario email before submitting.
-            </p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

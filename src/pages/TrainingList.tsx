@@ -2,7 +2,9 @@ import { FileText, ArrowRight, PlayCircle, CheckCircle, Target, RotateCcw } from
 import { useApp } from '../AppContext';
 import { ACORD_MODULES } from '../data/modules';
 import { Topbar } from '../components/Topbar';
-import { ProgressBar, Badge, SectionTitle } from '../components/ui';
+import { ProgressBar, SectionTitle } from '../components/ui';
+import { ModuleStatusBadge } from '../components/ModuleStatusBadge';
+import { moduleProgressPct } from '../lib/assessmentService';
 import type { AcordId } from '../types';
 
 export function TrainingList() {
@@ -29,7 +31,7 @@ export function TrainingList() {
         <div className="space-y-3">
           {ACORD_MODULES.map((mod, idx) => {
             const p = student.progress[mod.id];
-            const moduleProgress = p.videoCompleted ? (p.bestScore !== null ? 100 : 70) : Math.round(p.videoProgress * 0.7);
+            const moduleProgress = moduleProgressPct(p);
             return (
               <div
                 key={mod.id}
@@ -45,8 +47,7 @@ export function TrainingList() {
                   <div className="flex items-center gap-3 mb-1">
                     <span className="text-sm font-semibold text-white">{mod.formNumber}</span>
                     <span className="text-sm text-muted-400">— {mod.title}</span>
-                    {p.status === 'completed' && <Badge variant="success"><CheckCircle className="w-3 h-3" /> Complete</Badge>}
-                    {p.status === 'in-progress' && <Badge variant="warning">In Progress</Badge>}
+                    <ModuleStatusBadge progress={p} showNotStarted={false} />
                   </div>
                   <p className="text-sm text-muted-500 leading-relaxed line-clamp-1">{mod.description}</p>
                   <div className="mt-3 flex items-center gap-6">

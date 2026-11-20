@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Bot, Download, ExternalLink, FileText, ImagePlus, Laptop, Loader2, MessageCircle, RotateCcw, Send, Timer, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { destroyTrainingSample, generateCustomTrainingSample, generateTrainingSample, isCustomSampleRequest, parseSampleRequest, SAMPLE_LIFETIME_MS, type TrainingSample } from '../lib/trainingSample';
+import { destroyTrainingSample, generateCustomTrainingSample, generateTrainingSample, isCustomSampleRequest, parseSampleRequest, SAMPLE_LIFETIME_MS, type SampleForm, type TrainingSample } from '../lib/trainingSample';
 import { parseAcord27Reply } from '../lib/acord27Layout';
+import type { Acord25Data } from '../lib/acord25Layout';
 
 interface ChatImage { media_type: string; data: string; preview: string }
 interface ChatMessage {
@@ -18,6 +19,12 @@ interface ChatMessage {
 
 /** The ACORD Assistant bridge on the owner's PC (scripts/assistant-bridge.mjs). Only reachable from that PC. */
 const BRIDGE_URL = 'http://127.0.0.1:5174';
+
+/** Forms the assistant can make watermarked training samples of. */
+const SAMPLE_CARDS: { form: SampleForm; name: string; examples: string }[] = [
+  { form: '27', name: 'Evidence of Property', examples: "for example a declarations page or the lender's request" },
+  { form: '25', name: 'Certificate of Insurance', examples: 'for example declarations pages or the COI request email' },
+];
 const MAX_IMAGES_PER_MESSAGE = 4;
 const MAX_IMAGES_SENT = 4;      // across the conversation, newest first
 const MAX_EDGE = 1568;          // Claude's recommended max image edge
@@ -120,7 +127,7 @@ function SampleCard({ sample, expired, onExpire }: { sample: TrainingSample; exp
         <span className={`flex items-center gap-1 text-xs font-mono ${left < 120000 ? 'text-lava-300' : 'text-muted-400'}`}><Timer className="w-3.5 h-3.5" />{mm}:{ss}</span>
       </div>
       <p className="text-xs text-muted-400">
-        Filled with the practice scenario's correct answers ({sample.fieldCount} fields) and watermarked "TRAINING PURPOSES ONLY". It is removed from the app when the timer reaches 00:00.
+        {sample.fileName.includes('custom') ? `Filled with your information (${sample.fieldCount} fields)` : `Filled with the practice scenario's correct answers (${sample.fieldCount} fields)`} and watermarked "TRAINING PURPOSES ONLY". It is removed from the app when the timer reaches 00:00.
       </p>
       <div className="flex gap-2">
         <a href={sample.url} target="_blank" rel="noreferrer" className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5"><ExternalLink className="w-3.5 h-3.5" /> Open sample</a>
@@ -243,11 +250,11 @@ export function ChatAssistant() {
 
   /**
    * Standard sample: the practice scenario's correct answers.
-   * Custom sample: the AI reads the user's own question, notes and photos and the app fills the ACORD 27 with them.
+   * Custom sample: the AI reads the user's own question, notes and photos and the app fills the form with them.
    */
-  const makeSample = async (requestText: string, form: '27' | 'other', custom = false) => {
+  const makeSample = async (requestText: string, form: SampleForm | 'other', custom = false) => {
     const images = custom ? pending : [];
-    const userMsg: ChatMessage = { role: 'user', text: requestText || 'Create a sample ACORD 27 from this.', images, local: !custom };
+    const userMsg: ChatMessage = { role: 'user', text: requestText || `Create a sample ACORD ${form} from this.`, images, local: !custom };
     const history = [...messages, userMsg];
     setInput('');
     if (custom) setPending([]);
@@ -255,13 +262,13 @@ export function ChatAssistant() {
     const reply = (m: Partial<ChatMessage>) => setMessages((all) => [...all.slice(0, -1), { role: 'assistant', text: '', local: true, ...m }]);
     setMessages([...history, { role: 'assistant', text: '', local: true }]);
     if (form === 'other') {
-      reply({ text: 'Training samples are available for the **ACORD 27** only. Ask me for a "sample ACORD 27".' });
+      reply({ text: 'Training samples are available for the **ACORD 27** and the **ACORD 25** only. Ask me for a "sample ACORD 27" or a "sample ACORD 25".' });
       return;
     }
     if (custom && ready !== true) {
       reply({ text: isAdmin
         ? "To build a sample from your own information I need the AI chat, which isn't connected yet. Wait a moment for it to connect, then ask again. The standard sample works right now."
-        : "Building a sample from your own information needs the AI chat, which runs on the administrator's computer. You can still create the standard sample ACORD 27." });
+        : `Building a sample from your own information needs the AI chat, which runs on the administrator's computer. You can still create the standard sample ACORD ${form}.` });
       return;
     }
     setBusy(true);
@@ -269,20 +276,21 @@ export function ChatAssistant() {
       let sample: TrainingSample;
       let text: string;
       if (custom) {
-        reply({ text: 'Reading your information and filling the ACORD 27…' });
+        reply({ text: `Reading your information and filling the ACORD ${form}…` });
         const { data } = await supabase.auth.getSession();
         const res = await fetch(`${apiBase}/api/chat`, {
           method: 'POST',
           headers: { 'content-type': 'application/json', authorization: `Bearer ${data.session?.access_token ?? ''}` },
-          body: JSON.stringify({ task: 'acord27', messages: toPayload(history) }),
+          body: JSON.stringify({ task: `acord${form}`, messages: toPayload(history) }),
         });
-        const extracted = parseAcord27Reply(await readReply(res));
-        sample = await generateCustomTrainingSample(extracted);
+        // The reply is one JSON object; the same parser works for both forms.
+        const extracted = parseAcord27Reply(await readReply(res)) as Acord25Data;
+        sample = await generateCustomTrainingSample(form, extracted);
         const missing = (extracted.missing ?? []).filter(Boolean);
-        text = `${extracted.summary ?? 'Here is your ACORD 27 built from your information.'}${missing.length ? `\n\n**Not in your information (left blank):** ${missing.join(', ')}.` : ''}\n\nIt is watermarked for training and will be removed in ${SAMPLE_LIFETIME_MS / 60000} minutes.`;
+        text = `${extracted.summary ?? `Here is your ACORD ${form} built from your information.`}${missing.length ? `\n\n**Not in your information (left blank):** ${missing.join(', ')}.` : ''}\n\nIt is watermarked for training and will be removed in ${SAMPLE_LIFETIME_MS / 60000} minutes.`;
       } else {
-        sample = await generateTrainingSample('27');
-        text = `Here is a watermarked ACORD 27 sample. Use it to check that each answer sits in the right box. It will be removed in ${SAMPLE_LIFETIME_MS / 60000} minutes.`;
+        sample = await generateTrainingSample(form);
+        text = `Here is a watermarked ACORD ${form} sample. Use it to check that each answer sits in the right box. It will be removed in ${SAMPLE_LIFETIME_MS / 60000} minutes.`;
       }
       samplesRef.current.push(sample);
       reply({ text, sample });
@@ -294,8 +302,8 @@ export function ChatAssistant() {
   };
 
   /** Puts a starter sentence in the box so the user can add their details or a photo. */
-  const startCustomSample = () => {
-    setInput('Create a sample ACORD 27 from this information: ');
+  const startCustomSample = (form: SampleForm) => {
+    setInput(`Create a sample ACORD ${form} from this information: `);
     setError(null);
     window.setTimeout(() => inputRef.current?.focus(), 0);
   };
@@ -305,7 +313,7 @@ export function ChatAssistant() {
     if (busy || (!text && pending.length === 0)) return;
     const sampleRequest = isStaff && text ? parseSampleRequest(text) : null;
     if (sampleRequest) {
-      const custom = sampleRequest === '27' && isCustomSampleRequest(text, pending.length > 0, messages.some((m) => m.role === 'user' && !m.local));
+      const custom = sampleRequest !== 'other' && isCustomSampleRequest(text, pending.length > 0, messages.some((m) => m.role === 'user' && !m.local));
       await makeSample(text, sampleRequest, custom);
       return;
     }
@@ -371,7 +379,7 @@ export function ChatAssistant() {
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold text-white">ACORD Assistant</div>
           <div className="text-[11px] text-muted-500">
-            {ready === null ? 'Connecting…' : viaPc ? 'Ask about ACORD forms · via Claude Code on your PC' : 'Ask about ACORD 125, 126, 127, 130, 140, 27'}
+            {ready === null ? 'Connecting…' : viaPc ? 'Ask about ACORD forms · via Claude Code on your PC' : 'Ask about ACORD 125, 126, 127, 130, 140, 27, 25'}
           </div>
         </div>
         {messages.length > 0 && (
@@ -424,20 +432,20 @@ export function ChatAssistant() {
             </div>
           </div>
         )}
-        {messages.length === 0 && isStaff && (
-          <button onClick={() => makeSample('Generate a sample ACORD 27', '27')} disabled={busy}
-            className="w-full text-left p-3 rounded-lg border border-lava-600/30 bg-lava-600/5 hover:bg-lava-600/10 space-y-1">
-            <span className="flex items-center gap-2 text-sm font-medium text-white"><FileText className="w-4 h-4 text-lava-400" /> Generate a sample ACORD 27</span>
-            <span className="block text-xs text-muted-400">Trainers: the ACORD 27 filled with the correct answers, watermarked "Training purposes only". Available for 20 minutes.</span>
-          </button>
-        )}
-        {messages.length === 0 && isStaff && (
-          <button onClick={startCustomSample} disabled={busy}
-            className="w-full text-left p-3 rounded-lg border border-line-subtle bg-bg-base hover:border-lava-600/40 space-y-1">
-            <span className="flex items-center gap-2 text-sm font-medium text-white"><ImagePlus className="w-4 h-4 text-lava-400" /> ACORD 27 from my information</span>
-            <span className="block text-xs text-muted-400">Type the details or attach a photo (for example a declarations page or the lender's request). The assistant fills an ACORD 27 with them, watermarked, for 20 minutes.</span>
-          </button>
-        )}
+        {messages.length === 0 && isStaff && SAMPLE_CARDS.map((c) => (
+          <div key={c.form} className="space-y-1.5">
+            <button onClick={() => makeSample(`Generate a sample ACORD ${c.form}`, c.form)} disabled={busy}
+              className="w-full text-left p-3 rounded-lg border border-lava-600/30 bg-lava-600/5 hover:bg-lava-600/10 space-y-1">
+              <span className="flex items-center gap-2 text-sm font-medium text-white"><FileText className="w-4 h-4 text-lava-400" /> Generate a sample ACORD {c.form} <span className="text-muted-400 font-normal">({c.name})</span></span>
+              <span className="block text-xs text-muted-400">Trainers: the ACORD {c.form} filled with the practice scenario's correct answers, watermarked "Training purposes only". Available for 20 minutes.</span>
+            </button>
+            <button onClick={() => startCustomSample(c.form)} disabled={busy}
+              className="w-full text-left p-3 rounded-lg border border-line-subtle bg-bg-base hover:border-lava-600/40 space-y-1">
+              <span className="flex items-center gap-2 text-sm font-medium text-white"><ImagePlus className="w-4 h-4 text-lava-400" /> ACORD {c.form} from my information</span>
+              <span className="block text-xs text-muted-400">Type the details or attach a photo ({c.examples}). The assistant fills an ACORD {c.form} with them, watermarked, for 20 minutes.</span>
+            </button>
+          </div>
+        ))}
         {messages.map((m, i) => (
           <div key={i} className={m.role === 'user' ? 'flex justify-end' : 'flex gap-2'}>
             {m.role === 'assistant' && <div className="w-6 h-6 rounded-full bg-lava-600/20 flex items-center justify-center shrink-0 mt-0.5"><Bot className="w-3.5 h-3.5 text-lava-400" /></div>}
@@ -463,16 +471,20 @@ export function ChatAssistant() {
       <div className="border-t border-line-subtle p-3 space-y-2">
         {error && <div className="text-xs text-lava-300">{error}</div>}
         {isStaff && messages.length > 0 && (
-          <button onClick={() => makeSample('Generate a sample ACORD 27', '27')} disabled={busy}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-lava-600/30 text-[11px] text-slate-300 hover:bg-lava-600/10">
-            <FileText className="w-3.5 h-3.5 text-lava-400" /> Sample ACORD 27
-          </button>
-        )}
-        {isStaff && messages.length > 0 && (
-          <button onClick={startCustomSample} disabled={busy}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-line-subtle text-[11px] text-slate-300 hover:bg-bg-hover">
-            <ImagePlus className="w-3.5 h-3.5 text-lava-400" /> ACORD 27 from my info
-          </button>
+          <div className="flex flex-wrap gap-1.5">
+            {SAMPLE_CARDS.map((c) => (
+              <span key={c.form} className="contents">
+                <button onClick={() => makeSample(`Generate a sample ACORD ${c.form}`, c.form)} disabled={busy}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-lava-600/30 text-[11px] text-slate-300 hover:bg-lava-600/10">
+                  <FileText className="w-3.5 h-3.5 text-lava-400" /> Sample ACORD {c.form}
+                </button>
+                <button onClick={() => startCustomSample(c.form)} disabled={busy}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-line-subtle text-[11px] text-slate-300 hover:bg-bg-hover">
+                  <ImagePlus className="w-3.5 h-3.5 text-lava-400" /> ACORD {c.form} from my info
+                </button>
+              </span>
+            ))}
+          </div>
         )}
         {pending.length > 0 && (
           <div className="flex flex-wrap gap-2">

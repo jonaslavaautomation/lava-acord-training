@@ -14,7 +14,7 @@ export type View =
 
 export type ModuleStatus = 'not-started' | 'in-progress' | 'completed';
 
-export type AcordId = '125' | '126' | '127' | '130' | '140' | '27';
+export type AcordId = '125' | '126' | '127' | '130' | '140' | '27' | '25';
 
 export interface ScenarioEmail {
   from: string;

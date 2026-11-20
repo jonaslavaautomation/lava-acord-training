@@ -12,7 +12,7 @@ const MAX_IMAGES = 4;
 const IMAGE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif']);
 
 const SYSTEM_PROMPT = `You are the LAVA ACORD Assistant, a friendly tutor inside LAVA Automation's ACORD Training Simulator.
-The people you talk to are mostly virtual assistants (VAs) learning to fill out commercial insurance ACORD forms for US insurance agencies: ACORD 125 (Commercial Insurance Application), 126 (Commercial General Liability), 127 (Business Auto), 130 (Workers Compensation), 140 (Property) and 27 (Evidence of Property Insurance, issued to a mortgagee or lender as proof that property coverage is in force; it is evidence only and does not change the policy). Trainers and the administrator use you too.
+The people you talk to are mostly virtual assistants (VAs) learning to fill out commercial insurance ACORD forms for US insurance agencies: ACORD 125 (Commercial Insurance Application), 126 (Commercial General Liability), 127 (Business Auto), 130 (Workers Compensation), 140 (Property), 27 (Evidence of Property Insurance, issued to a mortgagee or lender as proof that property coverage is in force; it is evidence only and does not change the policy) and 25 (Certificate of Liability Insurance, the COI, issued to a certificate holder as proof of liability coverage; it is information only and does not change the policies). Trainers and the administrator use you too.
 
 How to help:
 - Answer questions about ACORD forms: what a section or box means, what goes in it, how to format entries (dates MM/DD/YYYY, money without cents, VINs exactly), when something is required for a quote versus for binding, and the insurance terms behind it (coinsurance, valuation, class codes, experience mod, employer's liability limits, symbols, and so on).
@@ -66,6 +66,35 @@ Keys (all values are strings unless noted):
 - missing: array of important ACORD 27 items not found in the user's information
 
 If the user's information is not about a property policy at all, reply {"summary": "<short reason>", "missing": []}.`;
+}
+
+/**
+ * task "acord25": same as "acord27", for the ACORD 25 Certificate of Liability Insurance (src/lib/acord25Layout.ts).
+ */
+export function acord25Prompt(): string {
+  const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', timeZone: 'America/New_York' });
+  return `You fill out an ACORD 25 (Certificate of Liability Insurance, 2016/03 edition) for a TRAINING SAMPLE, using only the information, documents and photos the user provided in this conversation (for example declarations pages, a COI request email, a contract's insurance requirements, or typed notes).
+
+Reply with ONLY one JSON object: no prose, no code fences. Omit any key you have no information for. Never invent names, policy numbers, NAIC numbers, limits, dates or addresses: if something isn't in the user's information, leave it out and list it in "missing".
+
+Keys (all values are strings unless noted; dates MM/DD/YYYY; money like "$1,000,000"):
+- issue_date: if not given, use today: ${today}
+- producer_name, producer_address1, producer_address2, producer_city, producer_state (2-letter code), producer_zip, producer_contact_name, producer_phone, producer_fax, producer_email
+- insured_name, insured_address1, insured_address2, insured_city, insured_state, insured_zip
+- insurers: array of { "letter": "A".."F", "name": full legal insurer name, "naic": NAIC number } in the order they are listed (A first)
+- certificate_number, revision_number (only if given)
+- General liability: gl_insurer_letter (the insurer letter from "insurers"), gl_commercial_general_liability (boolean), gl_claims_made (boolean), gl_occurrence (boolean), gl_other_coverage_1, gl_other_coverage_2 (text of other coverage lines), gl_aggregate_applies_per ("policy" | "project" | "location" | "other"), gl_aggregate_applies_other, gl_additional_insured ("Y" only if the certificate holder is an additional insured on this policy), gl_subrogation_waived ("Y" only if subrogation is waived), gl_policy_number, gl_effective_date, gl_expiration_date, gl_each_occurrence, gl_damage_to_rented_premises, gl_medical_expense, gl_personal_adv_injury, gl_general_aggregate, gl_products_completed_ops, gl_other_limit_description, gl_other_limit_amount
+- Automobile liability: auto_insurer_letter, auto_any_auto, auto_owned_autos_only, auto_hired_autos_only, auto_scheduled_autos, auto_non_owned_autos_only (booleans), auto_other_1, auto_other_2, auto_additional_insured ("Y"), auto_subrogation_waived ("Y"), auto_policy_number, auto_effective_date, auto_expiration_date, auto_combined_single_limit, auto_bodily_injury_per_person, auto_bodily_injury_per_accident, auto_property_damage, auto_other_coverage_description, auto_other_coverage_limit
+- Umbrella / excess: umbrella_insurer_letter, umbrella_type ("umbrella" | "excess"), umbrella_trigger ("occurrence" | "claims-made"), umbrella_ded_or_retention ("deductible" | "retention"), umbrella_ded_or_retention_amount, umbrella_additional_insured, umbrella_subrogation_waived, umbrella_policy_number, umbrella_effective_date, umbrella_expiration_date, umbrella_each_occurrence, umbrella_aggregate, umbrella_other_description, umbrella_other_limit
+- Workers compensation: wc_insurer_letter, wc_any_proprietor_excluded ("Y" | "N"), wc_subrogation_waived ("Y"), wc_policy_number, wc_effective_date, wc_expiration_date, wc_per_statute (boolean), wc_other, wc_el_each_accident, wc_el_disease_each_employee, wc_el_disease_policy_limit
+- Other policy (for example Professional Liability or Inland Marine): other_insurer_letter, other_policy_description, other_additional_insured, other_subrogation_waived, other_policy_number, other_effective_date, other_expiration_date, other_limits: array (max 3) of { "description": short limit name, "amount": like "$1,000,000" }
+- description_of_operations: project or location reference and the additional insured / waiver of subrogation wording the request asks for (at most about 400 characters)
+- holder_name, holder_address1, holder_address2, holder_city, holder_state, holder_zip: the certificate holder
+- authorized_representative: name of the person signing, if given
+- summary: one or two plain-English sentences saying what you filled in
+- missing: array of important ACORD 25 items not found in the user's information
+
+Only fill a coverage line for policies that are in the user's information. If the user's information is not about liability insurance or a certificate at all, reply {"summary": "<short reason>", "missing": []}.`;
 }
 
 interface ChatImage { media_type: string; data: string }
@@ -141,9 +170,10 @@ export async function POST(request: Request): Promise<Response> {
   try { body = await request.json(); } catch { return json(400, 'Bad request.'); }
   const messages = toAnthropicMessages(body.messages);
   if (typeof messages === 'string') return json(400, messages);
-  // task "acord27" = fill an ACORD 27 training sample from the user's information (JSON reply); default = tutor chat.
-  const fillAcord27 = body.task === 'acord27';
-  const systemText = fillAcord27 ? acord27Prompt() : SYSTEM_PROMPT;
+  // task "acord27" / "acord25" = fill a training sample of that form from the user's information (JSON reply);
+  // default = tutor chat.
+  const fillForm = body.task === 'acord27' || body.task === 'acord25';
+  const systemText = body.task === 'acord27' ? acord27Prompt() : body.task === 'acord25' ? acord25Prompt() : SYSTEM_PROMPT;
 
   const encoder = new TextEncoder();
 
@@ -178,7 +208,7 @@ export async function POST(request: Request): Promise<Response> {
           betas: ['server-side-fallback-2026-07-01'],
           fallbacks: 'default',
           // The long tutor prompt (instructions + video transcripts) is cached between requests.
-          system: fillAcord27
+          system: fillForm
             ? [{ type: 'text', text: systemText }]
             : [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral', ttl: '1h' } }],
           messages,

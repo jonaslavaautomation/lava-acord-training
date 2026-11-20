@@ -31,9 +31,17 @@ export async function buildTrainingSamplePdf(
   const { bytes: filled } = await fillPdf(master, values, customFields);
 
   const doc = await PDFDocument.load(filled, { updateMetadata: false });
+  const regularForFields = await doc.embedFont(StandardFonts.Helvetica);
   try {
     const form = doc.getForm();
     for (const f of form.getFields()) if (f instanceof PDFButton) form.removeField(f); // e.g. the form's "Clear All" button
+    // Auto-sized multi-line boxes (e.g. the ACORD 25 Description of Operations) print long text too big and cut it off.
+    for (const f of form.getFields()) {
+      if (f instanceof PDFTextField && f.isMultiline() && (f.getText() ?? '').length > 80) {
+        f.setFontSize(9);
+        f.defaultUpdateAppearances(regularForFields);
+      }
+    }
     form.flatten();
   } catch { /* already flat */ }
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);

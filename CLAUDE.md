@@ -1,6 +1,6 @@
 # LAVA ACORD Training Simulator
 
-Training app for virtual assistants (VAs) who fill out commercial insurance ACORD forms (125, 126, 127, 130, 140, 27).
+Training app for virtual assistants (VAs) who fill out commercial insurance ACORD forms (125, 126, 127, 130, 140, 27, 25).
 For each form a trainee watches the training video, passes a 15-question Knowledge Check (80%), then fills out the real
 fillable ACORD PDF for a scenario, and the server grades it (pass 80%, max 3 attempts).
 
@@ -46,13 +46,19 @@ Vercel auto-deploys every push to `main`. Treat a push as going live.
   `Evidence Of Property Ins.pdf` (ACORD 27 2006/07 edition, generic field names like `LOC`, `COVERAGE1`, `CASymbols212`;
   the rules note each printed label). `supabase/knowledge-checks/guides/acord-27-sop.txt` is the written 14-step process
   (from `Acord27-.pdf`); files in `guides/` are fed to the chatbot as `<process_guide>`.
-- Training samples (ACORD 27 only, by owner request): staff click "Generate a sample ACORD 27" (or type "sample ACORD 27")
-  in the ACORD Assistant. `get_training_sample()` (staff-only, allow-list `'27'`) returns answer-key values, using each
+- ACORD 25 (Certificate of Liability Insurance / COI): video "COI recording.mp4" (25:02, HawkSoft COI walkthrough; the
+  uploaded copy is compressed under 50 MB), fillable PDF "ACORD 25 Certificate of Liability Insurance.pdf" (ACORD 25 2016/03,
+  standard field names). The original download was encrypted (pdf-lib can't fill encrypted PDFs), so the uploaded copy was
+  decrypted with pypdf; always upload an unencrypted PDF. `guides/acord-25-coi-sop.txt` is the 13-step HawkSoft COI SOP
+  (from "COI Request Processing SOP.pdf", image-only). Scenario: Cascade Electric & Lighting / Westfield Development Group.
+- Training samples (ACORD 27 and ACORD 25 only, by owner request): staff click "Generate a sample ACORD 27" (or type "sample ACORD 27")
+  (or ACORD 25) in the ACORD Assistant. `get_training_sample()` (staff-only, allow-list `'27'`, `'25'`) returns answer-key values, using each
   rule's `sample` text; `src/lib/trainingSamplePdf.ts` fills, flattens and watermarks "TRAINING PURPOSES ONLY" in the
   browser. Nothing is stored; the blob URL is revoked after 20 minutes. Never let trainees reach these values.
   Custom samples: a request with the user's own details or a photo ("create a sample ACORD 27 from this") is sent to
-  `/api/chat` with `task: "acord27"`; `acord27Prompt()` makes the AI return the ACORD 27 boxes as JSON (never inventing
-  missing data), and `src/lib/acord27Layout.ts` maps them onto the 2006/07 PDF's fields. Needs the AI chat (admin's PC).
+  `/api/chat` with `task: "acord27"` / `"acord25"`; `acord27Prompt()` / `acord25Prompt()` make the AI return the form's boxes
+  as JSON (never inventing missing data), and `src/lib/acord27Layout.ts` / `acord25Layout.ts` map them onto the PDF fields
+  (keep each prompt's keys in sync with its layout file). Needs the AI chat (admin's PC).
 - Adding a form touches: `AcordId` in `src/types.ts`, the module-id lists in `AppContext.tsx`, `assessmentService.ts` and
   `trainerData.ts`, `src/data/modules.ts`, a migration inserting into `acord_modules`, the rules, and `build-chat-knowledge.mjs`.
 - Use the fillable PDFs `Acord-130-2019.pdf` and `Acord-140.pdf`. Other copies of the 130/140 PDFs are flat (no form fields) and can't be graded.

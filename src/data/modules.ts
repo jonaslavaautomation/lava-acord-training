@@ -419,7 +419,93 @@ Karen`,
   },
 };
 
-export const ACORD_MODULES: AcordModule[] = [MODULE_125, MODULE_126, MODULE_127, MODULE_130, MODULE_140, MODULE_27];
+export const MODULE_25: AcordModule = {
+  id: '25',
+  formNumber: 'ACORD 25',
+  title: 'Certificate of Liability Insurance',
+  description: 'The Certificate of Insurance (COI): proves to a certificate holder that the insured carries liability coverage.',
+  category: 'Liability',
+  videoTitle: 'ACORD 25 — Certificate of Insurance (COI) Requests',
+  videoDescription: 'Process a COI request: check the policies, add the certificate holder, mark additional insured and waiver of subrogation, then issue the ACORD 25.',
+  videoDuration: '25:02',
+  introduction: {
+    purpose: 'The ACORD 25 (Certificate of Liability Insurance, or COI) shows a certificate holder, such as a general contractor, landlord or licensing board, which liability policies the insured has: the insurers, policy numbers, policy periods and limits for General Liability, Auto, Umbrella/Excess and Workers Compensation. It is for information only and does not change the policies.',
+    agencyRole: 'Account managers and VAs issue COIs every day when a client or a client\'s customer asks for proof of coverage. Every policy shown must be current, the certificate holder\'s name and address must be exact, and Additional Insured (ADDL INSD) and Waiver of Subrogation (SUBR WVD) may only be marked when the policy provides them.',
+    keySections: [
+      { title: 'Producer, Insured & Insurers', description: 'Agency and contact, named insured and address, insurers A–F with NAIC numbers.' },
+      { title: 'Coverages', description: 'For each line: insurer letter, ADDL INSD / SUBR WVD, policy number, effective and expiration dates, limits.' },
+      { title: 'Description of Operations', description: 'Project or location, and the additional insured / waiver wording the contract requires.' },
+      { title: 'Certificate Holder & Signature', description: 'Holder name and full address; the authorized representative signs.' },
+    ],
+    learningObjectives: [
+      'Check that every policy on the certificate is current (not expired) before issuing it.',
+      'List each insurer with its letter (A–F) and NAIC number, and use that letter on each coverage line.',
+      'Copy policy numbers, dates and limits exactly as they appear on the policy.',
+      'Mark ADDL INSD and SUBR WVD only on the lines where the policy provides them.',
+      'Enter the certificate holder\'s name and full address exactly, and describe the project in Description of Operations.',
+      'Remember the ACORD 25 is information only and does not add or change coverage.',
+    ],
+  },
+  scenario: {
+    from: 'sarah.mitchell@summitproins.com',
+    fromName: 'Sarah Mitchell, Producer',
+    to: 'va-team@lavaagency.com',
+    subject: 'COI request — Cascade Electric & Lighting / Westfield Development Group',
+    date: 'Nov 18, 2026 — 8:40 AM',
+    body: `Hi team,
+
+Cascade Electric & Lighting was awarded the electrical work on the Westfield Plaza tenant improvement project. The general contractor needs a Certificate of Insurance before their crew can start on Monday. All policies are current. Details:
+
+PRODUCER (our agency)
+Summit Pro Insurance Services
+2150 River Plaza Drive, Suite 400, Sacramento, CA 95833
+Contact: Sarah Mitchell | Phone (916) 555-0120 | Fax (916) 555-0121 | sarah.mitchell@summitproins.com
+
+INSURED
+Cascade Electric & Lighting, Inc.
+7310 Folsom Boulevard, Suite B, Sacramento, CA 95826
+
+INSURERS
+A: Sierra Mutual Insurance Company, NAIC 24518 (General Liability and Auto)
+B: Golden Bear Workers Comp Insurance Company, NAIC 38812 (Workers Comp)
+C: Pacific Crest Excess Insurance Company, NAIC 29440 (Umbrella)
+
+GENERAL LIABILITY (Insurer A)
+Commercial General Liability, occurrence basis; general aggregate applies per project
+Policy CGL-5520187, 03/01/2026 to 03/01/2027
+Each occurrence $1,000,000 | Damage to rented premises $300,000 | Med exp $10,000
+Personal & adv injury $1,000,000 | General aggregate $2,000,000 | Products-comp/op agg $2,000,000
+
+AUTOMOBILE LIABILITY (Insurer A)
+Any auto. Policy BA-5520188, 03/01/2026 to 03/01/2027
+Combined single limit $1,000,000
+
+UMBRELLA (Insurer C)
+Umbrella, occurrence, $10,000 retention
+Policy UMB-883104, 03/01/2026 to 03/01/2027
+Each occurrence $5,000,000 | Aggregate $5,000,000
+
+WORKERS COMPENSATION (Insurer B)
+Per statute. No proprietors/officers excluded.
+Policy WC-2290614, 03/01/2026 to 03/01/2027
+E.L. each accident $1,000,000 | E.L. disease each employee $1,000,000 | E.L. disease policy limit $1,000,000
+
+WHAT THE CONTRACT REQUIRES
+- Westfield must be an additional insured on the General Liability and Auto policies.
+- Waiver of subrogation on General Liability, Auto and Workers Comp.
+- Description of operations: Re: Westfield Plaza Tenant Improvements, 2200 J Street, Sacramento, CA 95816.
+
+CERTIFICATE HOLDER
+Westfield Development Group, LLC
+1100 Capital Mall, Suite 500, Sacramento, CA 95814
+
+Please prepare the ACORD 25. I'm the authorized representative, so put my name on the signature line.
+
+Sarah`,
+  },
+};
+
+export const ACORD_MODULES: AcordModule[] = [MODULE_125, MODULE_126, MODULE_127, MODULE_130, MODULE_140, MODULE_27, MODULE_25];
 
 export const MODULE_MAP: Record<AcordId, AcordModule> = Object.fromEntries(
   ACORD_MODULES.map((m) => [m.id, m]),

@@ -14,6 +14,7 @@ const TITLES = {
   130: 'ACORD 130 — Workers Compensation Application',
   140: 'ACORD 140 — Property Section',
   27: 'ACORD 27 — Evidence of Property Insurance',
+  25: 'ACORD 25 — Certificate of Liability Insurance (COI)',
 };
 
 // A form whose video hasn't been transcribed yet (no transcripts/acord-<id>.txt) is skipped.

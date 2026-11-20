@@ -3,6 +3,8 @@ import { useApp } from '../AppContext';
 import { ACORD_MODULES } from '../data/modules';
 import { Topbar } from '../components/Topbar';
 import { Badge, ProgressBar, ScoreRing, StatCard, SectionTitle } from '../components/ui';
+import { ModuleStatusBadge } from '../components/ModuleStatusBadge';
+import { moduleProgressPct } from '../lib/assessmentService';
 import type { AcordId } from '../types';
 
 export function MyProgress() {
@@ -17,13 +19,7 @@ export function MyProgress() {
   const videosComplete = Object.values(progress).filter((p) => p.videoCompleted).length;
 
   const overallProgress = Math.round(
-    (Object.values(progress).reduce((acc, p) => {
-      let s = 0;
-      if (p.videoCompleted) s += 30;
-      if (p.status === 'completed') s += 40;
-      if (p.bestScore !== null) s += (p.bestScore / 100) * 30;
-      return acc + s;
-    }, 0) / (ACORD_MODULES.length * 100)) * 100,
+    Object.values(progress).reduce((acc, p) => acc + moduleProgressPct(p), 0) / ACORD_MODULES.length,
   );
 
   const moduleScores = ACORD_MODULES.map((mod) => ({
@@ -117,7 +113,7 @@ export function MyProgress() {
         <div className="space-y-3">
           {ACORD_MODULES.map((mod) => {
             const p = progress[mod.id];
-            const moduleProgress = p.videoCompleted ? (p.bestScore !== null ? 100 : 70) : Math.round(p.videoProgress * 0.7);
+            const moduleProgress = moduleProgressPct(p);
             return (
               <div key={mod.id} className="card-hover p-5 cursor-pointer" onClick={() => openModule(mod.id as AcordId)}>
                 <div className="flex items-center gap-4">
@@ -125,9 +121,7 @@ export function MyProgress() {
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm font-semibold text-white">{mod.formNumber}</span>
                       <span className="text-sm text-muted-400">— {mod.title}</span>
-                      {p.status === 'completed' && <Badge variant="success"><CheckCircle2 className="w-3 h-3" /> Complete</Badge>}
-                      {p.status === 'in-progress' && <Badge variant="warning">In Progress</Badge>}
-                      {p.status === 'not-started' && <Badge variant="default">Not Started</Badge>}
+                      <ModuleStatusBadge progress={p} />
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="flex-1">
